@@ -21,12 +21,12 @@ save("b", file = "behaviorbaseline.RData")
 # tester
 load("behaviorbaseline.RData")
 
-b1 <- build_null_beaker(b, "null01")
-b2 <- build_null_beaker(b, "null02")
-b3 <- build_null_beaker(b, "null03")
+b1 <- build_null_diver(b, "null01")
+b2 <- build_null_diver(b, "null02")
+b3 <- build_null_diver(b, "null03")
 # end: tester
 
-build_null_beaker <- function(baseline, deployid = "nullbeaker01", sim_start_time = NULL, sim_end_time = NULL) {
+build_null_diver <- function(baseline, deployid = "nulldiver01", sim_start_time = NULL, sim_end_time = NULL) {
 require(truncnorm)
 
 if(is.null(sim_start_time) | is.null(sim_end_time)) {

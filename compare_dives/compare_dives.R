@@ -24,8 +24,8 @@ com <- compare_dives(b1, b2)
 
 
 
-b1_null <- build_null_beaker(b1, sim_start_time = b1$Start[1], sim_end_time = b1$Start[nrow(b1)])
-b2_null <- build_null_beaker(b2, sim_start_time = b2$Start[1], sim_end_time = b2$Start[nrow(b2)])
+b1_null <- build_null_diver(b1, sim_start_time = b1$Start[1], sim_end_time = b1$Start[nrow(b1)])
+b2_null <- build_null_diver(b2, sim_start_time = b2$Start[1], sim_end_time = b2$Start[nrow(b2)])
 
 com_null <- compare_dives(b1_null, b2_null)
 
