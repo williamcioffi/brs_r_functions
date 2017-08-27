@@ -12,6 +12,6 @@ censor_dives <- function(b, dur_cutoff = 33*60) {
 	
 	index <- 1
 	while(index < nrow(b.out)) {
-		
+		# fill in the NAs
 	}
 }

@@ -1,46 +1,15 @@
-ff <- list.files()
-dese <- grep("Behavior", ff)
-ff <- ff[dese]
-nf <- length(ff)
+lookdir <- "."
 
-b <- vector()
+ff <- list.files(lookdir)
+bf <- ff[grep("-Behavior\\.csv", ff)]
+cf <- ff[grep("-Corrupt\\.csv",  ff)]
+sf <- ff[grep("-Status\\.csv",   ff)]
 
-for(i in 1:nf) {
-	tmp <- read.table(ff[i], header = TRUE, sep = ',', stringsAsFactors = FALSE)
-	b <- rbind(b, tmp)
-}
+beh <- read.table(file.path(lookdir, bf), header = TRUE, sep = ',', stringsAsFactors = FALSE)
+cor <- read.table(file.path(lookdir, cf), header = TRUE, sep = ',', stringsAsFactors = FALSE)
+sta <- read.table(file.path(lookdir, sf), header = TRUE, sep = ',', stringsAsFactors = FALSE)
 
-b$Start <- paste(strptime(b$Start, format = "%H:%M:%S %d-%b-%Y"), "UTC")
-b$End <- paste(strptime(b$End, format = "%H:%M:%S %d-%b-%Y"), "UTC")
-
-
-ff <- list.files()
-dese <- grep("Corrupt", ff)
-ff <- ff[dese]
-nf <- length(ff)
-
-cor <- vector()
-
-for(i in 1:nf) {
-	tmp <- read.table(ff[i], header = TRUE, sep = ',', stringsAsFactors = FALSE)
-	cor <- rbind(cor, tmp)
-}
-
-cor$Date <- paste(strptime(cor$Date, format = "%H:%M:%S %d-%b-%Y"), "UTC")
-
-
-
-ff <- list.files()
-dese <- grep("Status", ff)
-ff <- ff[dese]
-nf <- length(ff)
-
-stat <- vector()
-
-for(i in 1:nf) {
-	tmp <- read.table(ff[i], header = TRUE, sep = ',', stringsAsFactors = FALSE)
-	stat <- rbind(stat, tmp)
-}
-
-
-stat$Received <- paste(strptime(stat$Received, format = "%H:%M:%S %d-%b-%Y"), "UTC")
+beh$Start 		<- paste(strptime(beh$Start, 	format = "%H:%M:%S %d-%b-%Y"), "UTC")
+beh$End 			<- paste(strptime(beh$End, 		format = "%H:%M:%S %d-%b-%Y"), "UTC")
+cor$Date 		<- paste(strptime(cor$Date, 		format = "%H:%M:%S %d-%b-%Y"), "UTC")
+sta$Received 	<- paste(strptime(sta$Received, format = "%H:%M:%S %d-%b-%Y"), "UTC")
