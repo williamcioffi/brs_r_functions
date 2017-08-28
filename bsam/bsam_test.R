@@ -16,9 +16,9 @@ argos$Date <- strptime(argos$Date, format = "%H:%M:%S %d-%b-%Y", tz = "UTC")
 
 # friendnames <- unique(argos$DeployID)
 # dese <- c(2, 4, 5, 7) #7, 2, 4, 5
-a <- argos[which(argos$DeployID %in% friendnames[dese]), ]
+# a <- argos[which(argos$DeployID %in% friendnames[dese]), ]
 
-movedat <- data.frame(id = a$DeployID, date = a$Date, lc = a$LocationQuality, lon = a$Longitude, lat = a$Latitude)
+movedat <- data.frame(id = argos$DeployID, date = argos$Date, lc = argos$LocationQuality, lon = argos$Longitude, lat = argos$Latitude)
 
 fit <- fit_ssm(movedat, model = "DCRW", tstep = 1, adapt = 5000, samples = 5000, 
               thin = 5, span = 1)
