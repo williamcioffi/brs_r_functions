@@ -13,7 +13,7 @@ alm <- read.table(file.path(lookdir, af), header = TRUE, sep = ',', stringsAsFac
 
 beh$Start 		<- paste(strptime(beh$Start, 	format = "%H:%M:%S %d-%b-%Y"), "UTC")
 beh$End 			<- paste(strptime(beh$End, 		format = "%H:%M:%S %d-%b-%Y"), "UTC")
-crp$Date 		<- paste(strptime(cor$Date, 		format = "%H:%M:%S %d-%b-%Y"), "UTC")
+crp$Date 		<- paste(strptime(crp$Date, 		format = "%H:%M:%S %d-%b-%Y"), "UTC")
 sta$Received 	<- paste(strptime(sta$Received, format = "%H:%M:%S %d-%b-%Y"), "UTC")
 
 #all uses a different date format... do I even have to explain why this is insane?
