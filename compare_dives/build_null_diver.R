@@ -29,9 +29,11 @@ b3 <- build_null_diver(b, "null03")
 build_null_diver <- function(baseline, deployid = "nulldiver01", sim_start_time = NULL, sim_end_time = NULL) {
 require(truncnorm)
 
-if(is.null(sim_start_time) | is.null(sim_end_time)) {
-	sim_start_time <- as.character(min(as.POSIXct(baseline$Start, tz = "GMT")))
-	sim_end_time <- as.character(max(as.POSIXct(baseline$Start, tz = "GMT")))
+if(is.null(sim_start_time)) {
+	sim_start_time <- as.character(min(as.POSIXct(baseline$Start, tz = "UTC")))
+}
+if(is.null(sim_end_time)) {
+  sim_end_time <- as.character(max(as.POSIXct(baseline$Start, tz = "UTC")))
 }
 
 dur <- apply(baseline[, c('DurationMax', 'DurationMin')], 1, mean)
@@ -78,7 +80,7 @@ st[1] <- sim_start_time
 isdive <- FALSE
 i <- 1
 
-while(as.POSIXct(st[i], tz = "GMT") < as.POSIXct(sim_end_time, tz = "GMT")) {
+while(as.POSIXct(st[i], tz = "UTC") < as.POSIXct(sim_end_time, tz = "UTC")) {
 	if(isdive) {
 		tmp_simdurs <- rtruncnorm(1, a = 0, mean = dive_bar, sd = dive_sig)
 		tmp_simdeps <- simulate_depths(tmp_simdurs, cfs, divemod_sig)
@@ -97,7 +99,7 @@ while(as.POSIXct(st[i], tz = "GMT") < as.POSIXct(sim_end_time, tz = "GMT")) {
 	simdeps[i] <- tmp_simdeps
 	simwhat[i] <- tmp_simwhat
 	
-	en[i] <-  as.character(as.POSIXct(st[i], tz = "GMT") + tmp_simdurs)
+	en[i] <-  as.character(as.POSIXct(st[i], tz = "UTC") + tmp_simdurs)
 	st[i + 1] <- en[i]
 	
 	i <- i + 1

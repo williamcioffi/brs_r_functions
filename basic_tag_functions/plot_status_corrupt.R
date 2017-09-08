@@ -129,7 +129,9 @@ colorss <- c(
 	rgb(0, 0, 0, .33),
 	rgb(.5, .5, 0, .33),
 	rgb(.5, 0, .5, .33),
-	rgb(0, .5, .5, .33)
+	rgb(0, .5, .5, .33),
+	rgb(.33, .33, .33, .33),
+	rgb(.33, .33, 0, .33)
 )
 			
 colors_dark <- c(
@@ -142,11 +144,13 @@ colors_dark <- c(
 	rgb(0, 0, 0),
 	rgb(.5, .5, 0),
 	rgb(.5, 0, .5),
-	rgb(0, .5, .5)
+	rgb(0, .5, .5),
+	rgb(.33, .33, .33),
+	rgb(.33, .33, 0)
 )
 			
-pches <- c(15, 16, 17, 18, 19, 21, 22, 23, 24, 25)
-cexes <- rep(1, 10)
+pches <- c(15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 11, 12)
+cexes <- rep(1, 12)
 
 
 for(i in 1:length(behtype)) {
@@ -210,33 +214,38 @@ prepstatus <- function(status, start_time, end_time) {
 
 		
 	colorss <- c(
-		rgb(1, 0, 0, .33),
-		rgb(0, 1, 0, .33),
-		rgb(0, 0, 1, .33),
-		rgb(1, 1, 0, .33),
-		rgb(0, 1, 1, .33),
-		rgb(1, 0, 1, .33),
-		rgb(0, 0, 0, .33),
-		rgb(.5, .5, 0, .33),
-		rgb(.5, 0, .5, .33),
-		rgb(0, .5, .5, .33)
+	  rgb(1, 0, 0, .33),
+	  rgb(0, 1, 0, .33),
+	  rgb(0, 0, 1, .33),
+	  rgb(1, 1, 0, .33),
+	  rgb(0, 1, 1, .33),
+	  rgb(1, 0, 1, .33),
+	  rgb(0, 0, 0, .33),
+	  rgb(.5, .5, 0, .33),
+	  rgb(.5, 0, .5, .33),
+	  rgb(0, .5, .5, .33),
+	  rgb(.33, .33, .33, .33),
+	  rgb(.33, .33, 0, .33)
 	)
-				
+	
 	colors_dark <- c(
-		rgb(1, 0, 0),
-		rgb(0, 1, 0),
-		rgb(0, 0, 1),
-		rgb(1, 1, 0),
-		rgb(0, 1, 1),
-		rgb(1, 0, 1),
-		rgb(0, 0, 0),
-		rgb(.5, .5, 0),
-		rgb(.5, 0, .5),
-		rgb(0, .5, .5)
+	  rgb(1, 0, 0),
+	  rgb(0, 1, 0),
+	  rgb(0, 0, 1),
+	  rgb(1, 1, 0),
+	  rgb(0, 1, 1),
+	  rgb(1, 0, 1),
+	  rgb(0, 0, 0),
+	  rgb(.5, .5, 0),
+	  rgb(.5, 0, .5),
+	  rgb(0, .5, .5),
+	  rgb(.33, .33, .33),
+	  rgb(.33, .33, 0)
 	)
-				
-	pches <- c(15, 16, 17, 18, 19, 21, 22, 23, 24, 25)
-	cexes <- rep(1, 10)
+	
+	pches <- c(15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 11, 12)
+	cexes <- rep(1, 12)
+	
 
 	list(s_ordered = s_ordered, slist = slist, tseq = tseq, dseq = dseq, mseq = mseq, pches = pches, cexes = cexes, tt = tt, colors_dark = colors_dark, colorss = colorss, zoom1 = zoom1, zoom2 = zoom2)
 }

@@ -1,6 +1,6 @@
 # plot 
 
-plot_dives <- function(behavior, depth_lim = NULL, start_time = NULL, end_time = NULL, show_gaps = FALSE, show_minutes = FALSE, deploy_ids = NULL) {
+plot_dives <- function(behavior, depth_lim = NULL, start_time = NULL, end_time = NULL, show_gaps = FALSE, show_minutes = FALSE, deploy_ids = NULL, colorss, colors_dark, pches) {
 
 if(!is.null(deploy_ids)) {
 	dese <- which(behavior$DeployID %in% deploy_ids)
@@ -77,34 +77,38 @@ axis(2, at = pretty(prettyaxis), las = 1)
 
 if(show_minutes) axis.POSIXct(1, at = mseq, labels = FALSE)
 
-colorss <- c(
-	rgb(1, 0, 0, .33),
-	rgb(0, 1, 0, .33),
-	rgb(0, 0, 1, .33),
-	rgb(1, 1, 0, .33),
-	rgb(0, 1, 1, .33),
-	rgb(1, 0, 1, .33),
-	rgb(0, 0, 0, .33),
-	rgb(.5, .5, 0, .33),
-	rgb(.5, 0, .5, .33),
-	rgb(0, .5, .5, .33)
-)
-			
-colors_dark <- c(
-	rgb(1, 0, 0),
-	rgb(0, 1, 0),
-	rgb(0, 0, 1),
-	rgb(1, 1, 0),
-	rgb(0, 1, 1),
-	rgb(1, 0, 1),
-	rgb(0, 0, 0),
-	rgb(.5, .5, 0),
-	rgb(.5, 0, .5),
-	rgb(0, .5, .5)
-)
-			
-pches <- c(15, 16, 17, 18, 19, 21, 22, 23, 24, 25)
-cexes <- rep(1, 10)
+# colorss <- c(
+#   rgb(1, 0, 0, .33),
+#   rgb(0, 1, 0, .33),
+#   rgb(0, 0, 1, .33),
+#   rgb(1, 1, 0, .33),
+#   rgb(0, 1, 1, .33),
+#   rgb(1, 0, 1, .33),
+#   rgb(0, 0, 0, .33),
+#   rgb(.5, .5, 0, .33),
+#   rgb(.5, 0, .5, .33),
+#   rgb(0, .5, .5, .33),
+#   rgb(.33, .33, .33, .33),
+#   rgb(.33, .33, 0, .33)
+# )
+# 
+# colors_dark <- c(
+#   rgb(1, 0, 0),
+#   rgb(0, 1, 0),
+#   rgb(0, 0, 1),
+#   rgb(1, 1, 0),
+#   rgb(0, 1, 1),
+#   rgb(1, 0, 1),
+#   rgb(0, 0, 0),
+#   rgb(.5, .5, 0),
+#   rgb(.5, 0, .5),
+#   rgb(0, .5, .5),
+#   rgb(.33, .33, .33),
+#   rgb(.33, .33, 0)
+# )
+# 
+# pches <- c(15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 11, 12)
+cexes <- rep(1, 12)
 
 ##############################
 ###CUT OFF TO SHORTEST TAG?###
