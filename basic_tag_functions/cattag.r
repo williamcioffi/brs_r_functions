@@ -1,36 +1,37 @@
+###
 # cat_tag
 #
 # concatenates all the downloads into big master files
-# wrc 10july2017
+# wrc 20170911
 
 
-### constants
-#raw data dir. expected format is a directory containing a bunch of directories which all start with BRS and contain dap extracted files
+###
+# constants
+# raw data dir. expected format is a directory containing a bunch of directories which all start with BRS and contain dap extracted files
 raw_data_dir <- "."
 
-#this is what the dap processor adds inbetween the prefix (filter) and stream name (e.g., argos, behavior, ...)
+# this is what the dap processor adds inbetween the prefix (filter) and stream name (e.g., argos, behavior, ...)
 DAP_FILE_SEP <- "-"
 
-#this is the regrex for data directories with individual downloads unpacked with dap processor
+# this is the regrex for data directories with individual downloads unpacked with dap processor
 # DIR_PATTERN <- '^BRS'
 
-#this is the prefix for the master file written out for each stream
+# this is the prefix for the master file written out for each stream
 OUT_PREFIX <- "MASTER-"
 
-#datetime format of directory names
 
-### set up
-#get list of all directories that start with BRS
+###
+# set up
+# get list of all directories that start with BRS
 setwd(raw_data_dir)
 allfiles 	<- list.files()
 # dese 		<- grep(DIR_PATTERN, allfiles)
 # brsfiles 	<- allfiles[dese]
 dese 		<- which(dir.exists(allfiles))
 dirs 	<- allfiles[dese]
-
 ndirs 		<- length(dirs)
 
-#take account of what data streams are where
+# take account of what data streams are where
 tagfiles 	<- list()
 prefix 		<- list()
 types 		<- list()
@@ -44,14 +45,16 @@ for(i in 1:ndirs) {
 	types[[i]] 		<- sapply(tagfiles_sp , '[[', 2)
 }
 
-### concatenate
-#unique list of datastream types
+###
+# concatenate
+# unique list of datastream types
 utypes 	<- unique(unlist(types))
 ntypes 	<- length(utypes)
 streams <- list()
 downloaded <- list()
 
-#iterate over each datastream type and then over each directory and rbind one file per stream
+# iterate over each datastream type and then over each directory and rbind one file per stream
+# RawArgos has extra junk at the end. it seems to always be 5 lines so i've just dropped those
 
 for(i in 1:ntypes) {
 

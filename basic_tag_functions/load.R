@@ -1,3 +1,9 @@
+###
+# load
+# 
+# loads some useful data streams for futher manipulation
+# wrc 20170911
+
 lookdir <- "."
 
 ff <- list.files(lookdir)

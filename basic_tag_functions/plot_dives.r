@@ -1,18 +1,44 @@
-# plot 
+###
+# plot_dives
+# wrc 20170911
 
-plot_dives <- function(behavior, depth_lim = NULL, start_time = NULL, end_time = NULL, show_gaps = FALSE, show_minutes = FALSE, deploy_ids = NULL, colorss, colors_dark, pches) {
+plot_dives <- function(
+  behavior,
+  depth_lim = NULL,
+  start_time = NULL,
+  end_time = NULL,
+  show_gaps = FALSE,
+  show_minutes = FALSE,
+  deploy_ids = NULL,
+  col = NULL,
+  pch = NULL,
+  lty = 1
+) {
 
+###
+# constants  
+USEFUL_PCH <- 0:18
+  
+###
+# set up of some parameters
+  
+# restrict to certain deployids
 if(!is.null(deploy_ids)) {
 	dese <- which(behavior$DeployID %in% deploy_ids)
 	behavior <- behavior[dese, ]
 }
 
+# make sure everything is in chronological order and build a list by deployid
+# friendnames is used later to draw the legend
+# nfriends is used to know how many animals we are plotting
 behavior <- behavior[order(behavior$Start), ]
 friendnames <- sort(unique(behavior$DeployID))
+nfriends <- length(friendnames)
 b_oo <- order(behavior$DeployID)
 b_ordered <- behavior[b_oo, ]
 blist <- split(b_ordered, as.character(b_ordered$DeployID))
 
+# calculate depth limits for plotting.
 dep <- -apply(b_ordered[, c('DepthMin', 'DepthMax')], 1, mean)
 dep[which(is.na(dep))] <- 0
 
@@ -20,6 +46,7 @@ if(is.null(depth_lim)) {
 	depth_lim <- min(dep)*1.15
 }
 
+# find the min and max datetime for plotting zoom and axes
 tt <- as.character(b_ordered$Start)
 tt <- c(tt, as.character(max(b_ordered$End)))
 
@@ -35,8 +62,10 @@ if(is.null(end_time)) {
 	zoom2 <- as.POSIXct(end_time, tz = "UTC")
 }
 
+# create a little room to plot gaps
 deplim <- c(depth_lim, abs(depth_lim)*0.15)
 
+# set up the plotting area
 plot(
 	as.POSIXct(tt, tz = "UTC"), rep(0, length(tt)),
 	xlab = "", ylab = "", 
@@ -65,50 +94,28 @@ mseq <- seq.POSIXt(
 	by = "min"
 )
 
+# plot date and hour by default and minutes if flag is set
 axis.POSIXct(1, at = dseq, format = "%d%b", las = 2, tcl = '-0.75')
 axis.POSIXct(1, at = tseq, labels = FALSE)
+if(show_minutes) axis.POSIXct(1, at = mseq, labels = FALSE)
 
+
+# I don't want to include the gaps plot (15% of maxdepth above 0) in the axis
 prettyaxis <- deplim
 prettyaxis[2] <- 0
 
 axis(2, at = pretty(prettyaxis), las = 1)
 
+# set up plotting symbols
+# assuming that user supplied colors have alpha = 1, turn it down for better plotting
+# if pch aren't specified pull from a list of good pches
+if(is.null(col)) col <- rainbow(nfriends)
+if(is.na(col)) col <- rep("black", nfriends)
 
-
-if(show_minutes) axis.POSIXct(1, at = mseq, labels = FALSE)
-
-# colorss <- c(
-#   rgb(1, 0, 0, .33),
-#   rgb(0, 1, 0, .33),
-#   rgb(0, 0, 1, .33),
-#   rgb(1, 1, 0, .33),
-#   rgb(0, 1, 1, .33),
-#   rgb(1, 0, 1, .33),
-#   rgb(0, 0, 0, .33),
-#   rgb(.5, .5, 0, .33),
-#   rgb(.5, 0, .5, .33),
-#   rgb(0, .5, .5, .33),
-#   rgb(.33, .33, .33, .33),
-#   rgb(.33, .33, 0, .33)
-# )
-# 
-# colors_dark <- c(
-#   rgb(1, 0, 0),
-#   rgb(0, 1, 0),
-#   rgb(0, 0, 1),
-#   rgb(1, 1, 0),
-#   rgb(0, 1, 1),
-#   rgb(1, 0, 1),
-#   rgb(0, 0, 0),
-#   rgb(.5, .5, 0),
-#   rgb(.5, 0, .5),
-#   rgb(0, .5, .5),
-#   rgb(.33, .33, .33),
-#   rgb(.33, .33, 0)
-# )
-# 
-# pches <- c(15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 11, 12)
+colors_dark <- col
+colorss <- adjustcolor(col, alpha.f = 0.33)
 cexes <- rep(1, 12)
+if(is.null(pch)) pch <- rep(USEFUL_PCH, ceiling(nfriends / length(USEFUL_PCH)))[1:nfriends]
 
 ##############################
 ###CUT OFF TO SHORTEST TAG?###
@@ -194,8 +201,8 @@ for(l in 1:length(blist)) {
 	}
 	
 	xx <- as.POSIXct(xx, tz = "UTC")
-	points(xx, yy, col = colorss[l], pch = pches[l], cex = cexes[l])
-	lines(xx, yy, col = colorss[l])
+	points(xx, yy, col = colorss[l], pch = pch[l], cex = cexes[l])
+	lines(xx, yy, col = colorss[l], lty = lty)
 	
 	# cur_alltimes <- c(as.character(cur$Start), as.character(cur$End))
 	# lines(as.POSIXct(cur_alltimes, tz = "UTC"), rep(l*100, nrow(cur)*2), lwd = 10, col = colors_dark[l])
@@ -203,7 +210,7 @@ for(l in 1:length(blist)) {
 
 taglabs <- sapply(blist, function(l) as.character(l$DeployID[1]))
 ntags <- length(taglabs)
-legend("bottomright", legend = taglabs, pch = pches[1:ntags], lty = rep(1, ntags), col = colors_dark[1:ntags], bty = 'n')
+legend("bottomright", legend = taglabs, pch = pch[1:ntags], lty = rep(1, ntags), col = colors_dark[1:ntags], bty = 'n')
 
 if(show_gaps) {
 	gapy1 <- abs(depth_lim)*0.05
@@ -332,7 +339,7 @@ if(show_gaps) {
 				 # rgb(.5, 0, .5),
 				 # rgb(0, .5, .5))
 			
-# pches <- c(15, 16, 17, 18, 19, 21, 22, 23, 24, 25)
+# pch <- c(15, 16, 17, 18, 19, 21, 22, 23, 24, 25)
 # cexes <- c(1, 1, 1, 1, 1)
 
 # ##############################
@@ -419,7 +426,7 @@ if(show_gaps) {
 	# }
 	
 	# xx <- as.POSIXct(xx, tz = "UTC")
-	# points(xx, yy, col = colorss[l], pch = pches[l], cex = cexes[l])
+	# points(xx, yy, col = colorss[l], pch = pch[l], cex = cexes[l])
 	# lines(xx, yy, col = colorss[l])
 	
 	# # cur_alltimes <- c(as.character(cur$Start), as.character(cur$End))
@@ -428,7 +435,7 @@ if(show_gaps) {
 
 # taglabs <- sapply(b_beaks, function(l) as.character(l$DeployID[1]))
 # ntags <- length(taglabs)
-# legend("bottomright", legend = taglabs, pch = pches[1:ntags], lty = rep(1, ntags), col = colors_dark[1:ntags], bty = 'n')
+# legend("bottomright", legend = taglabs, pch = pch[1:ntags], lty = rep(1, ntags), col = colors_dark[1:ntags], bty = 'n')
 
 
 
@@ -493,10 +500,10 @@ if(show_gaps) {
 # for(l in 1:length(cb_beaks)) {
 	# xx <- as.POSIXct(cb_beaks[[l]]$Date, tz = "UTC")
 	# yy <- cumcount[[l]]
-	# points(xx, yy, pch = pches[l], col = colors_dark[l], cex = .5)
+	# points(xx, yy, pch = pch[l], col = colors_dark[l], cex = .5)
 	# lines(xx, yy, col = colors_dark[l])
 # }
 
 # # abline(v = max(as.POSIXct(b_beaks[[2]]$End, tz = "UTC")), lty = 2, col = "purple")
 
-# legend("topleft", legend = taglabs, pch = pches[1:ntags], lty = c(rep(1, ntags)), col = c(colors_dark[1:ntags]), bty = 'n')
+# legend("topleft", legend = taglabs, pch = pch[1:ntags], lty = c(rep(1, ntags)), col = c(colors_dark[1:ntags]), bty = 'n')
