@@ -33,5 +33,5 @@ findgaps <- function(behavior) {
 		stretch[(desegaps[ngaps] + 1):n] <- ngaps + 1
 	}
 	
-	list(ngaps = ngaps, gap_st = gap_st, gap_en = gap_en, gap_diffs = diffs, stretchid = stretch)
+	list(deploy_id = unique(behavior$DeployID), ngaps = ngaps, gap_st = gap_st, gap_en = gap_en, gap_diffs = diffs, stretchid = stretch)
 }
