@@ -1,10 +1,13 @@
 ###
-# load
+# loadtag
 # 
 # loads some useful data streams for futher manipulation
+# returns a list of behavior, corrupt, status, all, and argos
+#
 # wrc 20170911
 
-lookdir <- "."
+loadtag <- function(lookdir) {
+# lookdir <- "."
 
 ff <- list.files(lookdir)
 bf <- ff[grep("-Behavior\\.csv", ff)]
@@ -26,7 +29,11 @@ arg$Date      <- paste(strptime(arg$Date, format = "%H:%M:%S %d-%b-%Y"), "UTC")
 sta$Received 	<- paste(strptime(sta$Received, format = "%H:%M:%S %d-%b-%Y"), "UTC")
 
 
-#all uses a different date format... do I even have to explain why this is insane?
+# all uses a different date format... do I even have to explain why this is insane?
 alm$Loc..date <- paste(strptime(alm$Loc..date, format = "%m/%d/%Y %H:%M:%S"), "UTC")
 alm$Msg.Date  <- paste(strptime(alm$Msg.Date, format = "%m/%d/%Y %H:%M:%S"), "UTC")
 
+list(behavior = beh, corrupt = crp, status = sta, allmessages = alm, argos = arg)
+
+# end of function
+}

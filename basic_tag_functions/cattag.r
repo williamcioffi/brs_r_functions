@@ -4,27 +4,28 @@
 # concatenates all the downloads into big master files
 # wrc 20170911
 
+cattag <- function(raw_data_dir, DAP_FILE_SEP = "-", OUT_PREFIX = "MASTER-") {
 
 ###
 # constants
 # raw data dir. expected format is a directory containing a bunch of directories which all start with BRS and contain dap extracted files
-raw_data_dir <- "."
+# raw_data_dir <- "."
 
 # this is what the dap processor adds inbetween the prefix (filter) and stream name (e.g., argos, behavior, ...)
-DAP_FILE_SEP <- "-"
+# DAP_FILE_SEP <- "-"
 
 # this is the regrex for data directories with individual downloads unpacked with dap processor
 # DIR_PATTERN <- '^BRS'
 
 # this is the prefix for the master file written out for each stream
-OUT_PREFIX <- "MASTER-"
+# OUT_PREFIX <- "MASTER-"
 
 
 ###
 # set up
 # get list of all directories that start with BRS
-setwd(raw_data_dir)
-allfiles 	<- list.files()
+# setwd(raw_data_dir)
+allfiles 	<- file.path(raw_data_dir, list.files(raw_data_dir))
 # dese 		<- grep(DIR_PATTERN, allfiles)
 # brsfiles 	<- allfiles[dese]
 dese 		<- which(dir.exists(allfiles))
@@ -83,5 +84,8 @@ finally = {})
 close(pb)
 
 	streams[[i]] <- do.call("rbind", curstream)
-	write.table(streams[[i]], paste(OUT_PREFIX, utypes[i], sep = ""), row.names = FALSE, sep = ',')
+	write.table(streams[[i]], file.path(raw_data_dir, paste(OUT_PREFIX, utypes[i], sep = "")), row.names = FALSE, sep = ',')
+}
+
+# end function
 }

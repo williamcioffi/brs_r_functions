@@ -2,26 +2,18 @@
 
 library(bsam)
 
-ff <- list.files()
-dese <- grep("-Argos", ff)
-ff <- ff[dese]
-nf <- length(ff)
-
-argos <- read.table(ff, header = TRUE, sep =',', stringsAsFactors = FALSE)
+datadir <- "~/Downloads/tmp/batch_downloaded_20170914_1816UTC"
+source("~/git/brs_r_functions/basic_tag_functions/load.R")
+streams <- loadtag(datadir)
+argos <- streams$argos
 argos <- argos[-which(argos$LocationQuality == ""), ]
-argos$Date <- strptime(argos$Date, format = "%H:%M:%S %d-%b-%Y", tz = "UTC")
-
-# kill <- -which(argos$DeployID == "ZcTag063")[which(argos$Date[which(argos$DeployID == "ZcTag063")] < "2017-08-01 00:00:00 UTC")]
-# argos <- argos[kill, ]
-
-# friendnames <- unique(argos$DeployID)
-# dese <- c(2, 4, 5, 7) #7, 2, 4, 5
-# a <- argos[which(argos$DeployID %in% friendnames[dese]), ]
+zcs <- grep("Zc", argos$DeployID)
+argos <- argos[zcs, ]
 
 movedat <- data.frame(id = argos$DeployID, date = argos$Date, lc = argos$LocationQuality, lon = argos$Longitude, lat = argos$Latitude)
 
 fit <- fit_ssm(movedat, model = "DCRW", tstep = 1, adapt = 5000, samples = 5000, 
-              thin = 5, span = 1)
+              thin = 5, span = 1) 
 
 # map_ssm(fit)
 # diag_ssm(fit)
@@ -31,27 +23,33 @@ results <- get_summary(fit)
 xx <- as.POSIXct(results$date, tz = "UTC")
 cc <- results$id
 
+dese <- which(xx > "2017-09-05")
+
+xx <- xx[dese]
+cc <- cc[dese]
+
+x11()
 par(mfrow = c(2, 1), mar = c(rep(0, 4)), oma = c(4.1, 4.1, 0, 0), las = 1)
-y1 <- results$lon
-l1 <- results$lon.025
-u1 <- results$lon.975
-
-plot(xx, y1, col = cc, pch = 16, xaxt = 'n')
+y1 <- results$lon[dese]
+l1 <- results$lon.025[dese]
+u1 <- results$lon.975[dese]
+  
+plot(xx, y1, col = cc, pch = 16, xaxt = 'n', xlim = c(st, en))
 segments(xx, l1, xx, u1, col = cc)
-legend("topright", legend = unique(cc), col = unique(cc), pch = rep(16, length(unique(cc))))
-legend("topleft", legend = "LONGITUDE", bty = 'n')
+legend("topleft", legend = unique(cc), col = unique(cc), pch = rep(16, length(unique(cc))))
+legend("bottomleft", legend = "LONGITUDE", bty = 'n')
 
-y2 <- results$lat
-l2 <- results$lat.025
-u2 <- results$lat.975
+y2 <- results$lat[dese]
+l2 <- results$lat.025[dese]
+u2 <- results$lat.975[dese]
 
 plot(xx, y2, col = cc, pch = 16)
 segments(xx, l2, xx, u2, col = cc)
-legend("topright", legend = unique(cc), col = unique(cc), pch = rep(16, length(unique(cc))))
-legend("topleft", legend = "LATITUDE", bty = 'n')
+legend("topleft", legend = unique(cc), col = unique(cc), pch = rep(16, length(unique(cc))))
+legend("bottomleft", legend = "LATITUDE", bty = 'n')
 
 
-
+x11()
 plot(y1, y2, col = cc, pch = 16)
 segments(y1, l2, y1, u2, col = cc)
 segments(l1, y2, u1, y2, col = cc)
