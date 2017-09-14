@@ -110,7 +110,7 @@ axis(2, at = pretty(prettyaxis), las = 1)
 # assuming that user supplied colors have alpha = 1, turn it down for better plotting
 # if pch aren't specified pull from a list of good pches
 if(is.null(col)) col <- rainbow(nfriends)
-if(is.na(col)) col <- rep("black", nfriends)
+if(all(is.na(col))) col <- rep("black", nfriends)
 
 colors_dark <- col
 colorss <- adjustcolor(col, alpha.f = 0.33)
