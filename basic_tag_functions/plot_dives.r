@@ -12,7 +12,8 @@ plot_dives <- function(
   deploy_ids = NULL,
   col = NULL,
   pch = NULL,
-  lty = 1
+  lty = 1,
+  cex = 1
 ) {
 
 ###
@@ -114,7 +115,7 @@ if(all(is.na(col))) col <- rep("black", nfriends)
 
 colors_dark <- col
 colorss <- adjustcolor(col, alpha.f = 0.33)
-cexes <- rep(1, 12)
+cexes <- rep(cex, nfriends)
 if(is.null(pch)) pch <- rep(USEFUL_PCH, ceiling(nfriends / length(USEFUL_PCH)))[1:nfriends]
 
 ##############################

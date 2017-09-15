@@ -2,7 +2,7 @@
 # look at CEE
 #
 
-datadir <- "~/Downloads/tmp/batch_downloaded_20170914_1816UTC"
+datadir <- "~/Downloads/tmp/batch_downloaded_20170914_2337UTC"
 
 source("~/git/brs_r_functions/basic_tag_functions/findgaps.R")
 source("~/git/brs_r_functions/basic_tag_functions/plot_dives.r")
@@ -19,15 +19,16 @@ gms <- friends[grep("Gm", friends)]
 
 cst <- as.POSIXct("2017-09-12 16:00:00 UTC", tz = "UTC")
 cen <- as.POSIXct("2017-09-12 17:00:00 UTC", tz = "UTC")
-x11()
+col <- rainbow(length(friends))
+pch <- 0:18
 
 # centered on cee
-for(i in 1:length(zcs)) {
-pdf(paste0(zcs[i], "-zoom.pdf"))
-plot_dives(beh, start_time = "2017-09-11 16:00:00", end_time = "2017-09-13 16:00:00", show_gaps = TRUE, deploy_ids = zcs[i], col = "black")
+pdf("cee0912.pdf")
+for(i in 1:length(friends)) {
+plot_dives(beh, start_time = "2017-09-11 16:00:00", end_time = "2017-09-13 16:00:00", show_gaps = TRUE, deploy_ids = friends[i], col = col[i], pch = pch[i])
 rect(cst, 0, cen, -4000, col = rgb(0, 0, 0, .5), border = NA)
-dev.off()
 }
+dev.off()
 
 # since sep 05
 for(i in 1:length(zcs)) {
