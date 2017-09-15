@@ -2,8 +2,10 @@
 
 library(bsam)
 
-datadir <- "~/Downloads/tmp/batch_downloaded_20170914_1816UTC"
+datadir <- "~/Downloads/tmp/batch_downloaded_20170915_0051UTC/"
+source("~/git/brs_r_functions/basic_tag_functions/cattag.r")
 source("~/git/brs_r_functions/basic_tag_functions/load.R")
+cattag(datadir)
 streams <- loadtag(datadir)
 argos <- streams$argos
 argos <- argos[-which(argos$LocationQuality == ""), ]
@@ -23,7 +25,9 @@ results <- get_summary(fit)
 xx <- as.POSIXct(results$date, tz = "UTC")
 cc <- results$id
 
-dese <- which(xx > "2017-09-05")
+dese <- which(xx > "2017-08-17")
+st <- as.POSIXct("2017-09-12 16:00:00 UTC", tz = "UTC")
+en <- as.POSIXct("2017-09-12 17:00:00 UTC", tz = "UTC")
 
 xx <- xx[dese]
 cc <- cc[dese]
@@ -34,7 +38,7 @@ y1 <- results$lon[dese]
 l1 <- results$lon.025[dese]
 u1 <- results$lon.975[dese]
   
-plot(xx, y1, col = cc, pch = 16, xaxt = 'n', xlim = c(st, en))
+plot(xx, y1, col = cc, pch = 16, xaxt = 'n')
 segments(xx, l1, xx, u1, col = cc)
 legend("topleft", legend = unique(cc), col = unique(cc), pch = rep(16, length(unique(cc))))
 legend("bottomleft", legend = "LONGITUDE", bty = 'n')
