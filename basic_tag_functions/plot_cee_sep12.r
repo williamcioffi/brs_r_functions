@@ -2,7 +2,7 @@
 # look at CEE
 #
 
-datadir <- "~/Downloads/tmp/batch_downloaded_20170914_2337UTC"
+datadir <- "~/Downloads/tmp/batch_downloaded_20170915_1833UTC/"
 
 source("~/git/brs_r_functions/basic_tag_functions/findgaps.R")
 source("~/git/brs_r_functions/basic_tag_functions/plot_dives.r")
