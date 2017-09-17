@@ -10,7 +10,7 @@ haverdist <- function(lat1, lon1, lat2, lon2) {
 	
 	a = sin(dlat/2) * sin(dlat/2) + cos(lat1) * cos(lat2) * sin(dlon/2) * sin(dlon/2)
 	c = 2 * atan2(sqrt(a), sqrt(1-a))
-  
+	
 	r * c
 }
 
