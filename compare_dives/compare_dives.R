@@ -1,62 +1,62 @@
 #compare 2 dive patterns
-
-ff <- list.files()
-dese <- grep("Behavior", ff)
-ff <- ff[dese]
-nf <- length(ff)
-
-b <- vector()
-
-for(i in 1:nf) {
-	tmp <- read.table(ff[i], header = TRUE, sep = ',', stringsAsFactors = FALSE)
-	b <- rbind(b, tmp)
-}
-
-
-bb <- split(b, b$DeployID)
-names(bb)
-
-b1 <- bb[[1]]
-b2 <- bb[[3]]
-
-com <- compare_dives(b1, b2)
-
-
-
-
-b1_null <- build_null_diver(b1, sim_start_time = b1$Start[1], sim_end_time = b1$Start[nrow(b1)])
-b2_null <- build_null_diver(b2, sim_start_time = b2$Start[1], sim_end_time = b2$Start[nrow(b2)])
-
-com_null <- compare_dives(b1_null, b2_null)
-
-
-par(mfrow = c(2, 1), mar = rep(0, 4), oma = c(4.1, 4.1, 0, 0))
-plot(as.POSIXct(com$b1_ens, tz = "UTC"), abs(com$diff_times ), log = 'y')
-abline(h = 60, lty = 2, col = "purple")
-
-plot(as.POSIXct(com_null$b1_ens, tz = "UTC"), abs(com_null$diff_times ), log = 'y')
-abline(h = 60, lty = 2, col = "purple")
-
-
-
-# # par(mfrow = c(2, 1), mar = rep(0, 4), oma = c(4.1, 4.1, 0, 0))
-# plotcomparedives(com, obs = TRUE)
-# plotcomparedives(com_null)
-
-# cplot(list(com$diff_times, com_null$diff_times))
-
-#draw gaps
-gaps <- findgaps(b2)
-gapx1 <- as.POSIXct(gaps$gap_st, tz = "UTC")
-gapx2 <- as.POSIXct(gaps$gap_en, tz = "UTC")
-rect(gapx1, -1000, gapx2, 15000, col = rgb(1, 0, 0, .25), border = NA)
-
-
-#draw gaps
-gaps <- findgaps(b1)
-gapx1 <- as.POSIXct(gaps$gap_st, tz = "UTC")
-gapx2 <- as.POSIXct(gaps$gap_en, tz = "UTC")
-rect(gapx1, -1000, gapx2, 15000, col = rgb(0, 1, 0, .25), border = NA)
+# 
+# ff <- list.files()
+# dese <- grep("Behavior", ff)
+# ff <- ff[dese]
+# nf <- length(ff)
+# 
+# b <- vector()
+# 
+# for(i in 1:nf) {
+# 	tmp <- read.table(ff[i], header = TRUE, sep = ',', stringsAsFactors = FALSE)
+# 	b <- rbind(b, tmp)
+# }
+# 
+# 
+# bb <- split(b, b$DeployID)
+# names(bb)
+# 
+# b1 <- bb[[1]]
+# b2 <- bb[[3]]
+# 
+# com <- compare_dives(b1, b2)
+# 
+# 
+# 
+# 
+# b1_null <- build_null_diver(b1, sim_start_time = b1$Start[1], sim_end_time = b1$Start[nrow(b1)])
+# b2_null <- build_null_diver(b2, sim_start_time = b2$Start[1], sim_end_time = b2$Start[nrow(b2)])
+# 
+# com_null <- compare_dives(b1_null, b2_null)
+# 
+# 
+# par(mfrow = c(2, 1), mar = rep(0, 4), oma = c(4.1, 4.1, 0, 0))
+# plot(as.POSIXct(com$b1_ens, tz = "UTC"), abs(com$diff_times ), log = 'y')
+# abline(h = 60, lty = 2, col = "purple")
+# 
+# plot(as.POSIXct(com_null$b1_ens, tz = "UTC"), abs(com_null$diff_times ), log = 'y')
+# abline(h = 60, lty = 2, col = "purple")
+# 
+# 
+# 
+# # # par(mfrow = c(2, 1), mar = rep(0, 4), oma = c(4.1, 4.1, 0, 0))
+# # plotcomparedives(com, obs = TRUE)
+# # plotcomparedives(com_null)
+# 
+# # cplot(list(com$diff_times, com_null$diff_times))
+# 
+# #draw gaps
+# gaps <- findgaps(b2)
+# gapx1 <- as.POSIXct(gaps$gap_st, tz = "UTC")
+# gapx2 <- as.POSIXct(gaps$gap_en, tz = "UTC")
+# rect(gapx1, -1000, gapx2, 15000, col = rgb(1, 0, 0, .25), border = NA)
+# 
+# 
+# #draw gaps
+# gaps <- findgaps(b1)
+# gapx1 <- as.POSIXct(gaps$gap_st, tz = "UTC")
+# gapx2 <- as.POSIXct(gaps$gap_en, tz = "UTC")
+# rect(gapx1, -1000, gapx2, 15000, col = rgb(0, 1, 0, .25), border = NA)
 
 
 

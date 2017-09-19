@@ -10,7 +10,7 @@ source("~/git/brs_r_functions/basic_tag_functions/cattag.r")
 source("~/git/brs_r_functions/basic_tag_functions/load.R")
 source("~/git/brs_r_functions/pairwise_distances/haverdistance.R")
 
-# cattag(datadir)
+cattag(datadir)
 streams <- loadtag(datadir)
 
 arg <- streams$argos
