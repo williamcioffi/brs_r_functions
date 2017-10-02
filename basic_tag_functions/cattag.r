@@ -69,22 +69,36 @@ setTxtProgressBar(pb, d/ndirs)
 		path 		<- file.path(dirs[d], paste(curprefix, curtype, sep = DAP_FILE_SEP))
 		
 		if(file.exists(path)) {
-tryCatch({
+					tryCatch({ # start tryblock
 			if(curtype != "RawArgos.csv") {
 				curstream[[d]] <- read.table(path, header = TRUE, sep = ',', comment.char = "")
 			} else {
 				curstream[[d]] <- read.table(text = paste0(head(readLines(path), -5)), header = TRUE, sep = ',', comment.char = "")
 			}
-}, 
-error = function(err) {print(paste("type", i, "dir", d, err))},
-warning = function(war) {print(paste("type", i, "dir", d, war))},
-finally = {})
+					}, # start catchblock
+					error = function(err) {
+						message(paste("type", utypes[i], "dir", basename(dirs[d]), err))
+					},   
+					warning = function(war) {
+						message(paste("type", utypes[i], "dir", basename(dirs[d]), war))
+					}, 
+					finally = {}) # end catchblock
 		}
 	}
 close(pb)
 
+					tryCatch({ # start tryblock
 	streams[[i]] <- do.call("rbind", curstream)
 	write.table(streams[[i]], file.path(raw_data_dir, paste(OUT_PREFIX, utypes[i], sep = "")), row.names = FALSE, sep = ',')
+					}, # start catchblock
+					error = function(err) {
+						message(paste(err, "type", utypes[i]))
+						message(paste(capture.output(print(data.frame(dir = basename(dirs), ncol = sapply(curstream, ncol)))), collapse = "\n"))
+					},
+					warning = function(war) {
+						message(paste("type", utypes[i], war))
+					},
+					finally = {}) # end catchblock
 }
 
 # end function
