@@ -13,7 +13,8 @@ plot_dives <- function(
   col = NULL,
   pch = NULL,
   lty = 1,
-  cex = 1
+  cex = 1,
+  hidelegend = FALSE
 ) {
 
 ###
@@ -211,7 +212,10 @@ for(l in 1:length(blist)) {
 
 taglabs <- sapply(blist, function(l) as.character(l$DeployID[1]))
 ntags <- length(taglabs)
+
+if(!hidelegend) {
 legend("bottomright", legend = taglabs, pch = pch[1:ntags], lty = rep(1, ntags), col = colors_dark[1:ntags], bty = 'n')
+}
 
 if(show_gaps) {
 	gapy1 <- abs(depth_lim)*0.05

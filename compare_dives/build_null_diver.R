@@ -1,32 +1,32 @@
 ### null based on distributions
 
 
-# only need to run once
-ff <- list.files()
-dese <- grep("Behavior", ff)
-ff <- ff[dese]
-nf <- length(ff)
+# # only need to run once
+# ff <- list.files()
+# dese <- grep("Behavior", ff)
+# ff <- ff[dese]
+# nf <- length(ff)
 
-b <- vector()
+# b <- vector()
 
-for(i in 1:nf) {
-	tmp <- read.table(ff[i], header = TRUE, sep = ',', stringsAsFactors = FALSE)
-	b <- rbind(b, tmp)
-}
+# for(i in 1:nf) {
+	# tmp <- read.table(ff[i], header = TRUE, sep = ',', stringsAsFactors = FALSE)
+	# b <- rbind(b, tmp)
+# }
 
-save("b", file = "behaviorbaseline.RData")
-# end: only need to run once
+# save("b", file = "behaviorbaseline.RData")
+# # end: only need to run once
 
 
-# tester
-load("behaviorbaseline.RData")
+# # tester
+# load("behaviorbaseline.RData")
 
-b1 <- build_null_diver(b, "null01")
-b2 <- build_null_diver(b, "null02")
-b3 <- build_null_diver(b, "null03")
-# end: tester
+# b1 <- build_null_diver(b, "null01")
+# b2 <- build_null_diver(b, "null02")
+# b3 <- build_null_diver(b, "null03")
+# # end: tester
 
-build_null_diver <- function(baseline, deployid = "nulldiver01", sim_start_time = NULL, sim_end_time = NULL) {
+build_null_diver <- function(baseline, deployid = "nulldiver01", sim_start_time = NULL, sim_end_time = NULL, DIVEMINDUR = 33*60) {
 require(truncnorm)
 
 if(is.null(sim_start_time)) {
@@ -56,8 +56,10 @@ simulate_depths <- function(xx, cfs, divemod_sig) {
 
 surf_bar <- mean(dur[which(baseline$What == "Surface")])
 surf_sig <- sd  (dur[which(baseline$What == "Surface")])
+surf_min <- min (dur[which(baseline$What == "Surface")])
 
 dive_bar <- mean(dur[which(baseline$What == "Dive")])
+dive_min <- DIVEMINDUR
 dive_sig <- sd  (dur[which(baseline$What == "Dive")])
 
 
