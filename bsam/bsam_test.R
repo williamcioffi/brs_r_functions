@@ -17,12 +17,12 @@ source("~/git/brs_r_functions/compare_dives/build_null_diver.R")
 streams <- loadtag(datadir)
 argos <- streams$argos
 
-argos <- argos[which(argos$LocationQuality %in% c("0", "1", "2", "3", "A", "B", "Z")), ]
-argos <- argos[which(argos$DeployID == "ZcTag057"),]
+argos <- argos[which(argos$LocationQuality %in% c("0", "1", "2", "3", "A", "B")), ]
+# argos <- argos[which(argos$DeployID == "ZcTag057"),]
 
 movedat <- data.frame(id = argos$DeployID, date = argos$Date, lc = argos$LocationQuality, lon = argos$Longitude, lat = argos$Latitude)
 
-fit <- fit_ssm(movedat, model = "DCRW", tstep = 1, adapt = 5000, samples = 5000, 
+fit <- fit_ssm(movedat, model = "DCRW", tstep = 0.25, adapt = 5000, samples = 5000, 
               thin = 5, span = 1) 
 
 # map_ssm(fit)
@@ -30,6 +30,10 @@ fit <- fit_ssm(movedat, model = "DCRW", tstep = 1, adapt = 5000, samples = 5000,
 # plot_fit(fit)
 
 results <- get_summary(fit)
+
+dese <- grep("Zc", results$id)
+results <- results[dese, ]
+
 xx <- as.POSIXct(results$date, tz = "UTC")
 cc <- results$id
 
@@ -71,8 +75,8 @@ segments(y1, l2, y1, u2, col = cc)
 segments(l1, y2, u1, y2, col = cc)
 
 plot(worldmap, xlim = user[1:2], ylim = user[3:4])
+points(y1, y2,  col = cc, pch = 16)
 for(i in 1:length(y1)) {
 	points(y1[i], y2[i], pch = 16, col = "red")
 	readline(prompt="Press [enter] to continue")
 }
-
