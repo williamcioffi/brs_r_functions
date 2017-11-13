@@ -1,6 +1,6 @@
 #tag_diagnostics
 
-plot_status <- function(status, ycolname, start_time = NULL, end_time = NULL, show_minutes = FALSE, deploy_ids = NULL) {
+plot_status <- function(status, ycolname, start_time = NULL, end_time = NULL, show_minutes = FALSE, deploy_ids = NULL, legendpos = "topleft") {
 
 if(!is.null(deploy_ids)) {
 	dese <- which(status$DeployID %in% deploy_ids)
@@ -40,7 +40,10 @@ for(i in 1:length(ps$slist)) {
 
 taglabs <- sapply(ps$slist, function(l) as.character(l$DeployID[1]))
 ntags <- length(taglabs)
-legend("topleft", legend = taglabs, pch = ps$pches[1:ntags], lty = c(rep(1, ntags)), col = c(ps$colors_dark[1:ntags]), bty = 'n')
+
+if(!is.na(legendpos)) {
+	legend(legendpos, legend = taglabs, pch = ps$pches[1:ntags], lty = c(rep(1, ntags)), col = c(ps$colors_dark[1:ntags]), bty = 'n')
+}
 
 }
 
