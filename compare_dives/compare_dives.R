@@ -61,7 +61,7 @@
 
 
 #plot compare output
-plotcomparedives <- function(com, obs = FALSE, log = '') {
+plotcomparedives <- function(com, obs = FALSE, log = '', ...) {
 	days <- as.Date(com$b1_ens)
 	means <- tapply(abs(com$diff_times), days, mean)
 	quants <- tapply(abs(com$diff_times), days, quantile, c(0.025, 0.975))
@@ -71,7 +71,7 @@ plotcomparedives <- function(com, obs = FALSE, log = '') {
 	xx <- rep(xx, 2)
 	yy <- c(daily_means$upper[1:nrow(daily_means)], daily_means$lower[1:nrow(daily_means)])
 
-	plot(xx, yy, type = 'n', xaxt = 'n', las = 1, log = log)
+	plot(xx, yy, type = 'n', xaxt = 'n', las = 1, log = log, ...)
 	axis.POSIXct(1, at = xx)
 	
 	x <- as.POSIXct(daily_means$date, tz = "UTC")
