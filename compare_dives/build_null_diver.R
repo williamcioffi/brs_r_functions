@@ -84,7 +84,7 @@ i <- 1
 
 while(as.POSIXct(st[i], tz = "UTC") < as.POSIXct(sim_end_time, tz = "UTC")) {
 	if(isdive) {
-		tmp_simdurs <- rtruncnorm(1, a = 0, mean = dive_bar, sd = dive_sig)
+		tmp_simdurs <- rtruncnorm(1, a = dive_min, mean = dive_bar, sd = dive_sig)
 		tmp_simdeps <- simulate_depths(tmp_simdurs, cfs, divemod_sig)
 		tmp_simwhat <- "Dive"
 		
@@ -109,6 +109,9 @@ while(as.POSIXct(st[i], tz = "UTC") < as.POSIXct(sim_end_time, tz = "UTC")) {
 
 st <- st[1:length(en)]
 
+op <- options("stringsAsFactors")
+options(stringsAsFactors = FALSE)
+on.exit(options(op))
 
 b1 <- data.frame(DeployID = deployid, What = simwhat, DurationMax = simdurs, DurationMin = simdurs, DepthMax = simdeps, DepthMin = simdeps, Shape = "U", Start = st, End = en)
 
