@@ -10,15 +10,11 @@ source("~/git/brs_r_functions/basic_tag_functions/plot_dives.r")
 source("~/git/brs_r_functions/basic_tag_functions/cattag.r")
 source("~/git/brs_r_functions/basic_tag_functions/load.R")
 
-source("~/git/brs_r_functions/compare_dives/compare_dives.R")
-source("~/git/brs_r_functions/compare_dives/build_null_diver.R")
-
 # cattag(datadir)
 streams <- loadtag(datadir)
 argos <- streams$argos
 
 argos <- argos[which(argos$LocationQuality %in% c("0", "1", "2", "3", "A", "B")), ]
-# argos <- argos[which(argos$DeployID == "ZcTag057"),]
 
 movedat <- data.frame(id = argos$DeployID, date = argos$Date, lc = argos$LocationQuality, lon = argos$Longitude, lat = argos$Latitude)
 
@@ -32,39 +28,64 @@ fit <- fit_ssm(movedat, model = "DCRW", tstep = 0.25, adapt = 5000, samples = 50
 results <- get_summary(fit)
 
 dese <- grep("Zc", results$id)
+# desetags <- c("ZcTag055", "ZcTag056")
+# dese <- which(results$id %in% desetags)
 results <- results[dese, ]
 
 xx <- as.POSIXct(results$date, tz = "UTC")
 cc <- results$id
 
-# dese <- which(xx > "2017-08-17")
-# st <- as.POSIXct("2017-09-12 16:00:00 UTC", tz = "UTC")
-# en <- as.POSIXct("2017-09-12 17:00:00 UTC", tz = "UTC")
+# uids <- unique(results$id)
+# nids <- length(uids)
 
-# xx <- xx[dese]
-# cc <- cc[dese]
+# timelags <- vector()
+# for(i in 1:nids) {
+	# dese <- which(results$id == uids[i])
+	# timelags[dese] <- difftime(xx[dese], min(xx[dese]), units = "days")
+# }
+# xx <- timelags
 
-par(mfrow = c(2, 1), mar = c(rep(0, 4)), oma = c(4.1, 4.1, 0, 0), las = 1)
+  
+lay <- matrix(c(1, 1, 1, 1, 1, 1, 1, 3,
+				2, 2, 2, 2, 2, 2, 2, 3), 2, 8, byrow = TRUE)
+layout(lay)
+
 y1 <- results$lon
 l1 <- results$lon.025
 u1 <- results$lon.975
-  
-plot(rep(xx, 3), c(y1, u1, l1), xaxt = 'n', type = 'n')
+
+par(mar = c(0, 4.1, 0, 0), las = 1)
+plot(rep(xx, 3), c(y1, u1, l1), xaxt = 'n', type = 'n', ylab = "", xlab = "")
 points(xx, y1, col = cc, pch = 16)
 segments(xx, l1, xx, u1, col = cc)
-legend("topleft", legend = unique(cc), col = unique(cc), pch = rep(16, length(unique(cc))))
 legend("bottomleft", legend = "LONGITUDE", bty = 'n')
 
 y2 <- results$lat
 l2 <- results$lat.025
 u2 <- results$lat.975
 
-plot(rep(xx, 3), c(y2, u2, l2), xaxt = 'n', type = 'n')
+par(mar = c(4.1, 4.1, 0, 0), las = 1)
+plot(rep(xx, 3), c(y2, u2, l2), type = 'n', xaxt ='n', ylab = "", xlab = "")
 points(xx, y2, col = cc, pch = 16)
 segments(xx, l2, xx, u2, col = cc)
-legend("topleft", legend = unique(cc), col = unique(cc), pch = rep(16, length(unique(cc))))
 legend("bottomleft", legend = "LATITUDE", bty = 'n')
 
+dseq <- seq.POSIXt(
+	as.POSIXct(paste(as.Date(min(xx)), "00:00:00"), tz = "UTC"),
+	as.POSIXct(paste(as.Date(max(xx)) + 1, "00:00:00"), tz = "UTC"),
+	by = "day"
+)
+
+axis.POSIXct(1, at = dseq, format = "%d%b", las = 2, tcl = '-0.75')
+
+
+plot(1, 1, type = 'n', axes = FALSE, xlab = "", ylab = "")
+legend("center", legend = unique(cc), col = unique(cc), pch = rep(16, length(unique(cc))))
+
+
+
+
+#rworldmap
 library(rworldmap)
 worldmap <- getMap(resolution = "high")
 plot(c(y1, l1, u1), c(y2, l2, u2), type = 'n')
