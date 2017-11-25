@@ -1,5 +1,17 @@
-library(doMC)
-registerDoMC(cores = 4)
+# library(doMC)
+# registerDoMC(cores = 4)
+
+
+### only need to do this on windows because it deosn't know what an unambiguous format is
+# beh <- lapply(beh, function(l) {
+	# l$Start <- as.POSIXct(l$Start, format = "%H:%M:%S %d-%b-%Y", tz = "UTC")
+	# l$End <- as.POSIXct(l$End  , format = "%H:%M:%S %d-%b-%Y", tz = "UTC")
+	# l
+# })
+
+library(doParallel)
+cl <- makeCluster(detectCores())
+registerDoParallel(cl)
 
 starts <- Sys.time()
 outs <- foreach(n = 1:1000) %dopar% {
@@ -24,3 +36,5 @@ outs <- foreach(n = 1:1000) %dopar% {
 	length(which(sapply(checks, all)))
 }
 Sys.time() - starts
+
+stopCluster(cl)
