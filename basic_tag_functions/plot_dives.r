@@ -9,12 +9,14 @@ plot_dives <- function(
   end_time = NULL,
   show_gaps = FALSE,
   show_minutes = FALSE,
+  show_hours = TRUE,
   deploy_ids = NULL,
   col = NULL,
   pch = NULL,
   lty = 1,
   cex = 1,
-  hidelegend = FALSE
+  hidelegend = FALSE,
+  ylab = "depth (meters)"
 ) {
 
 ###
@@ -76,7 +78,7 @@ plot(
 	las = 1, bty = 'n', axes = FALSE
 )
 
-mtext("depth (meters)", side = 2, line = 4.1, las = 3)
+mtext(ylab, side = 2, line = 4.1, las = 3)
 
 tseq <- seq.POSIXt(
 	as.POSIXct(paste(as.Date(min(tt)), "00:00:00"), tz = "UTC"),
@@ -98,7 +100,7 @@ mseq <- seq.POSIXt(
 
 # plot date and hour by default and minutes if flag is set
 axis.POSIXct(1, at = dseq, format = "%d%b", las = 2, tcl = '-0.75')
-axis.POSIXct(1, at = tseq, labels = FALSE)
+if(show_hours) axis.POSIXct(1, at = tseq, labels = FALSE)
 if(show_minutes) axis.POSIXct(1, at = mseq, labels = FALSE)
 
 
@@ -204,7 +206,7 @@ for(l in 1:length(blist)) {
 	
 	xx <- as.POSIXct(xx, tz = "UTC")
 	points(xx, yy, col = colorss[l], pch = pch[l], cex = cexes[l])
-	lines(xx, yy, col = colorss[l], lty = lty)
+	if(!is.na(lty)) lines(xx, yy, col = colorss[l], lty = lty)
 	
 	# cur_alltimes <- c(as.character(cur$Start), as.character(cur$End))
 	# lines(as.POSIXct(cur_alltimes, tz = "UTC"), rep(l*100, nrow(cur)*2), lwd = 10, col = colors_dark[l])
@@ -214,7 +216,7 @@ taglabs <- sapply(blist, function(l) as.character(l$DeployID[1]))
 ntags <- length(taglabs)
 
 if(!hidelegend) {
-legend("bottomright", legend = taglabs, pch = pch[1:ntags], lty = rep(1, ntags), col = colors_dark[1:ntags], bty = 'n')
+legend("bottomright", legend = taglabs, pch = pch[1:ntags], lty = rep(lty, ntags), col = colors_dark[1:ntags], bty = 'n')
 }
 
 if(show_gaps) {
