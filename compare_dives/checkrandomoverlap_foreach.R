@@ -13,10 +13,21 @@ library(doParallel)
 cl <- makeCluster(detectCores())
 registerDoParallel(cl)
 
+ntags <- length(beh)
+ntagpairs <- ntags*(ntags-1) / 2
+tagpairs <- t(combn(1:ntags, 2))
+
 starts <- Sys.time()
-outs <- foreach(n = 1:1000) %dopar% {
-	n1 <- build_null_diver_vectorized(beh[[8]], deployid = "n1")
-	n2 <- build_null_diver_vectorized(beh[[9]], deployid = "n2")
+outs <- list()
+
+for(i in 1:ntagpairs) {
+b1 <- beh[[tagpairs[i, 1]]]
+b2 <- beh[[tagpairs[i, 2]]]
+clusterExport(cl, ls())
+
+outs[[i]] <- foreach(n = 1:100, .combine = c) %dopar% {
+	n1 <- build_null_diver_vectorized(beh[[tagpairs[1, 1]]], deployid = "n1")
+	n2 <- build_null_diver_vectorized(beh[[tagpairs[1, 2]]], deployid = "n2")
 	com <- compare_dives(n1, n2)
 	tdif <- abs(com$diff_times)
 	sorl <- vector(mod = "logical", length = length(tdif))
@@ -35,6 +46,7 @@ outs <- foreach(n = 1:1000) %dopar% {
 	
 	length(which(sapply(checks, all)))
 }
-Sys.time() - starts
+}
+t1 <- Sys.time() - starts
 
 stopCluster(cl)
