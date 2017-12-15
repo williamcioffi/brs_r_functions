@@ -1,4 +1,3 @@
-
 build_null_diver_vectorized <- function(baseline, deployid = "nulldiver01", DIVEMINDUR = 33*60) {
 require(truncnorm)
 
@@ -48,10 +47,11 @@ simdeps <- c(rbind(dive_simdeps, surf_simdeps))
 simshps <- c(rbind(dive_simshps, surf_simshps))
 simwhat <- c(rbind(dive_simwhat, surf_simwhat))
 
-st <- vector(mode = "numeric", length = nevents)
+nsimed <- nevents*2
+st <- vector(mode = "numeric", length = nsimed)
 st[1] <- sim_start_time
 en <- as.character(as.POSIXct(st[1], tz = "UTC") +  cumsum(simdurs))
-st[2:nevents] <- en[1:(nevents - 1)]
+st[2: nsimed] <- en[1:(nsimed - 1)]
 
 op <- options("stringsAsFactors")
 options(stringsAsFactors = FALSE)
