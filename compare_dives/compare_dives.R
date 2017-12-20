@@ -93,9 +93,17 @@ plotcomparedives <- function(com, obs = FALSE, log = '', ...) {
 
 
 
-compare_dives <- function(b1, b2) {
-	b1raw <- b1
+compare_dives <- function(b1, b2, cliptime = FALSE) {
 	b2raw <- b2
+	
+	# clip time clips both records only to the time that they were both transmitting
+	if(cliptime) {
+		start <- max(c(min(b1$Start), min(b2$Start)))
+		end   <- min(c(max(b1$End)  , max(b2$End)))
+		
+		b1 <- b1[which(b1$Start >= start & b1$End <= end), ]
+		b2 <- b2[which(b2$Start >= start & b2$End <= end), ]
+	}
 	
 	b1[, 'DurationMean'] <- apply(b1[, c('DurationMax', 'DurationMin')], 1, mean)
 	b2[, 'DurationMean'] <- apply(b2[, c('DurationMax', 'DurationMin')], 1, mean)
