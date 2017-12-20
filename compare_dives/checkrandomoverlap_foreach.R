@@ -23,6 +23,7 @@ tagpairs <- t(combn(1:ntags, 2))
 starts <- Sys.time()
 outs <- list()
 nsim <- 1000
+nconsec <- 4 # the number of consecutive time points to count
 
 clusterExport(cl, ls())
 	
@@ -31,7 +32,7 @@ outs <- foreach(i = 1:ntagpairs, .combine = c) %dopar% {
 	b2 <- beh[[tagpairs[i, 2]]]
 
 	outchecks <- vector(mode = "numeric", length = nsim)
-	for(sim in 1: nsim) {
+	for(s in 1: nsim) {
 		n1 <- build_null_diver_vectorized(b1, deployid = "n1")
 		n2 <- build_null_diver_vectorized(b2, deployid = "n2")
 		com <- compare_dives(n1, n2)
@@ -40,17 +41,16 @@ outs <- foreach(i = 1:ntagpairs, .combine = c) %dopar% {
 		sorl[which(tdif <= 60)] <- TRUE
 		sorl[which(tdif >  60)] <- FALSE
 		
-		n <- 4
-		st <- seq(1, length(sorl) - n - 1)
-		en <- seq(n, length(sorl))
+		st <- seq(1, length(sorl) - nconsec - 1)
+		en <- seq(nconsec, length(sorl))
 		
 		checks <- list()
 		
-		for(p in 1:(length(sorl) - n - 1)) {
+		for(p in 1:(length(sorl) - nconsec - 1)) {
 			checks[[p]] <- sorl[st[p]:en[p]]
 		}
 		
-		outchecks[sim] <- length(which(sapply(checks, all)))
+		outchecks[s] <- length(which(sapply(checks, all)))
 	}
 	
 	list(outchecks)
