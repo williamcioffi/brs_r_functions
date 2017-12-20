@@ -58,3 +58,16 @@ outs <- foreach(i = 1:ntagpairs) %dopar% {
 }
 
 stopCluster(cl)
+
+par(mfrow = c(5, 2), mar = c(3.1, 0, 0, 0))
+for(i in 1:ntagpairs) {
+	b1 <- beh[[tagpairs[i, 1]]]
+	b2 <- beh[[tagpairs[i, 2]]]
+	
+	com <- compare_dives(b1, b2, cliptime = TRUE)
+	length(which(abs(com$diff_times) <= 60)) / length(com$diff_times)
+	plot(density(outs[[i]]$alignedevents / length(com$diff_times)), xlim = c(0, 1), bty = 'n', yaxt = 'n', xlab = "", main = "", ylab = "")
+	abline(v = length(which(abs(com$diff_times) <= 60)) / length(com$diff_times), lty = 2)
+	legend("topright", legend = paste(names(beh)[tagpairs[i, 1]], names(beh)[tagpairs[i, 2]], sep = "-"))
+	# abline(v = quantile(outs[[i]]$alignedevents / length(com$diff_times), 0.95), col = "purple")
+}
