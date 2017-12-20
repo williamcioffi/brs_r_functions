@@ -21,17 +21,17 @@ ntagpairs <- ntags*(ntags-1) / 2
 tagpairs <- t(combn(1:ntags, 2))
 
 starts <- Sys.time()
-outs <- list()
 nsim <- 1000
 nconsec <- 4 # the number of consecutive time points to count
 
 clusterExport(cl, ls())
 	
-outs <- foreach(i = 1:ntagpairs, .combine = c) %dopar% {
+outs <- foreach(i = 1:ntagpairs) %dopar% {
 	b1 <- beh[[tagpairs[i, 1]]]
 	b2 <- beh[[tagpairs[i, 2]]]
 
-	outchecks <- vector(mode = "numeric", length = nsim)
+	consecutive <- vector(mode = "numeric", length = nsim)
+	alignedevents <- vector(mode = "numeric", length = nsim)
 	for(s in 1: nsim) {
 		n1 <- build_null_diver_vectorized(b1, deployid = "n1")
 		n2 <- build_null_diver_vectorized(b2, deployid = "n2")
@@ -44,16 +44,17 @@ outs <- foreach(i = 1:ntagpairs, .combine = c) %dopar% {
 		st <- seq(1, length(sorl) - nconsec - 1)
 		en <- seq(nconsec, length(sorl))
 		
-		checks <- list()
+		concheck <- list()
 		
 		for(p in 1:(length(sorl) - nconsec - 1)) {
-			checks[[p]] <- sorl[st[p]:en[p]]
+			concheck[[p]] <- sorl[st[p]:en[p]]
 		}
 		
-		outchecks[s] <- length(which(sapply(checks, all)))
+		consecutive[s] <- length(which(sapply(concheck, all)))
+		alignedevents[s] <- length(which(sorl))
 	}
 	
-	list(outchecks)
+	list(deployids = paste(b1$DeployID[1], b2$DeployID[1], sep = '-'), consecutive = consecutive, alignedevents = alignedevents)
 }
 
 stopCluster(cl)
