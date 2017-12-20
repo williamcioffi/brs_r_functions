@@ -41,12 +41,12 @@ outs <- foreach(i = 1:ntagpairs) %dopar% {
 		sorl[which(tdif <= 60)] <- TRUE
 		sorl[which(tdif >  60)] <- FALSE
 		
-		st <- seq(1, length(sorl) - nconsec - 1)
+		st <- seq(1, length(sorl) - (nconsec - 1))
 		en <- seq(nconsec, length(sorl))
 		
 		concheck <- list()
 		
-		for(p in 1:(length(sorl) - nconsec - 1)) {
+		for(p in 1:(length(sorl) - (nconsec - 1))) {
 			concheck[[p]] <- sorl[st[p]:en[p]]
 		}
 		
