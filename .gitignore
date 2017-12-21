@@ -5,3 +5,6 @@
 
 # local testing scripts
 testers/
+
+# output files
+outs/*.*
