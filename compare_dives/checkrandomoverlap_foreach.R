@@ -1,3 +1,6 @@
+# 20171221
+# ~ wrc
+
 # library(doMC)
 # registerDoMC(cores = 4)
 
@@ -29,45 +32,83 @@ clusterExport(cl, ls())
 outs <- foreach(i = 1:ntagpairs) %dopar% {
 	b1 <- beh[[tagpairs[i, 1]]]
 	b2 <- beh[[tagpairs[i, 2]]]
+	
+	# calculate real overlap
+	com <- compare_dives(b1, b2)
+	tdif <- abs(com$diff_times)
+	sorl <- (tdif <= 60)
 
-	consecutive <- vector(mode = "numeric", length = nsim)
-	alignedevents <- vector(mode = "numeric", length = nsim)
+	st <- seq(1, length(sorl) - (nconsec - 1))
+	en <- seq(nconsec, length(sorl))
+
+tryCatch({
+	for(p in 1:(length(sorl) - (nconsec - 1))) {
+		concheck[[p]] <- sorl[st[p]:en[p]]
+	}
+	consecutive <- length(which(sapply(concheck, all)))
+}, error = function(e) { 
+	warning("it seems like these animals might not overlap") 
+}, finaly = {
+	consecutive <- NA
+})
+	alignedevents <- length(which(sorl))
+				
+	# calculate null overlap
+	consecutive_sim <- vector(mode = "numeric", length = nsim)
+	alignedevents_sim <- vector(mode = "numeric", length = nsim)
+	ndiff_sim <- vector(mode = "numeric", length = nsim)
+	
 	for(s in 1: nsim) {
 		n1 <- build_null_diver_vectorized(b1, deployid = "n1")
 		n2 <- build_null_diver_vectorized(b2, deployid = "n2")
-		com <- compare_dives(n1, n2)
-		tdif <- abs(com$diff_times)
-		sorl <- vector(mod = "logical", length = length(tdif))
-		sorl[which(tdif <= 60)] <- TRUE
-		sorl[which(tdif >  60)] <- FALSE
 		
-		st <- seq(1, length(sorl) - (nconsec - 1))
-		en <- seq(nconsec, length(sorl))
+		com_sim <- compare_dives(n1, n2)
+		tdif_sim <- abs(com_sim$diff_times)
+		sorl_sim <- (tdif_sim <= 60)
 		
+		st_sim <- seq(1, length(sorl_sim) - (nconsec - 1))
+		en_sim <- seq(nconsec, length(sorl_sim))
+		
+		concheck_sim <- list()
 		concheck <- list()
-		
-		for(p in 1:(length(sorl) - (nconsec - 1))) {
-			concheck[[p]] <- sorl[st[p]:en[p]]
+tryCatch({		
+		for(p in 1:(length(sorl_sim) - (nconsec - 1))) {
+			concheck_sim[[p]] <- sorl_sim[st_sim[p]:en_sim[p]]
 		}
-		
-		consecutive[s] <- length(which(sapply(concheck, all)))
-		alignedevents[s] <- length(which(sorl))
+				
+		consecutive_sim[s] <- length(which(sapply(concheck_sim, all)))
+}, error = function(e) { 
+	warning("it seems like these animals might not overlap") 
+}, finaly = {
+	consecutive_sim[s] <- NA
+})
+
+	alignedevents_sim[s] <- length(which(sorl_sim))
+	ndiff_sim[s] <- length(com_sim$diff_times)
 	}
 	
-	list(deployids = paste(b1$DeployID[1], b2$DeployID[1], sep = '-'), consecutive = consecutive, alignedevents = alignedevents)
+	list(deployids = paste(b1$DeployID[1], b2$DeployID[1], sep = '-'), consecutive_sim = consecutive_sim, alignedevents_sim = alignedevents_sim, ndiff_sim = ndiff_sim, consecutive = consecutive, alignedevents = alignedevents, ndiff = length(com$diff_times))
 }
 
 stopCluster(cl)
 
-par(mfrow = c(5, 2), mar = c(3.1, 0, 0, 0))
-for(i in 1:ntagpairs) {
-	b1 <- beh[[tagpairs[i, 1]]]
-	b2 <- beh[[tagpairs[i, 2]]]
+
+# visualize
+dev.new()
+par(mfrow = c(6, 6), mar = c(3.1, 0, 0, 0))
+for(i in (1:ntagpairs)) {
+	o <- outs[[i]]
 	
-	com <- compare_dives(b1, b2, cliptime = TRUE)
-	length(which(abs(com$diff_times) <= 60)) / length(com$diff_times)
-	plot(density(outs[[i]]$alignedevents / length(com$diff_times)), xlim = c(0, 1), bty = 'n', yaxt = 'n', xlab = "", main = "", ylab = "")
-	abline(v = length(which(abs(com$diff_times) <= 60)) / length(com$diff_times), lty = 2)
-	legend("topright", legend = paste(names(beh)[tagpairs[i, 1]], names(beh)[tagpairs[i, 2]], sep = "-"))
-	# abline(v = quantile(outs[[i]]$alignedevents / length(com$diff_times), 0.95), col = "purple")
+	if(o$ndiff != 1) {
+		plot(density(o$alignedevents_sim / o$ndiff_sim), xlim = c(0, 0.2), bty = 'n', yaxt = 'n', xlab = "", main = "", ylab = "")
+		abline(v = o$alignedevents / o$ndiff, lty = 2)
+	} else {
+		plot(0, 0, type = 'n', axes = FALSE, xlab = "", ylab = "")
+	}
+	
+	legend("topright", legend = paste(names(beh)[tagpairs[i, 1]], names(beh)[tagpairs[i, 2]], sep = "-"), bty = 'n')
+	
+	if(!is.na(o$consecutive) & o$consecutive > 0) {
+		legend("bottomright", legend = paste(o$consecutive), text.col = "purple", bty = 'n')
+	}
 }
