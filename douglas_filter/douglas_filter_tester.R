@@ -34,3 +34,12 @@ PARAMS$ratecoef = 50
 m2 <- douglasfilter(movedat, PARAMS)
 PARAMS$ratecoef = 5
 m3 <- douglasfilter(movedat, PARAMS)
+
+dgf <- read.table("~/Desktop/douglas_filtered/ZcTag054-058-Filtered.csv", header = TRUE, sep = ',')
+dd <- split(dgf, dgf$animal)[[1]]
+plot(dd$longitud, dd$latitude)
+
+points(m0$lon, m0$lat, cex = .5, col = "blue")
+points(m1$lon, m1$lat, cex = .5, col = "red")
+
+# points(movedat$lon2, movedat$lat2, col = "blue", cex = .5)
