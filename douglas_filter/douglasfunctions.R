@@ -12,11 +12,14 @@ movedat <- data.frame(
 	lat = argos$Latitude,
 	lon = argos$Longitude,
 	lc = argos$LocationQuality,
+	lat2 = argos$Latitude2,
+	lon2 = argos$Longitude2,
 	stringsAsFactors = FALSE
 )
 
 movedat <- split(movedat, argos$DeployID)
 movedat <- movedat[[1]]
+m0 <- movedat
 
 # movedat <- rbind(data.frame(t = "2017-05-10 16:17:00 UTC", lat = 35.58, lon = -74.712, lc = "3", stringsAsFactors = FALSE), movedat)
 movedat$lc <- factor(movedat$lc, levels = c("Z", "B", "A", "0", "1", "2", "3"))
