@@ -1,6 +1,13 @@
 # douglas filter tester
 
-#load data
+# load example douglas filtered
+# from this i can infer that they used the DAR filter with 10 as a minrate
+# with only L2s accepted always
+# and perhaps a rate coefficient of less than 25?
+dgf <- read.table("~/Desktop/douglas_filtered/ZcTag054-058-Filtered.csv", header = TRUE, sep = ',')
+dd <- split(dgf, dgf$animal)[[1]]
+
+# load data
 datadir <- "~/Desktop/CURRENT/nulltest"
 source("~/git/brs_r_functions/basic_tag_functions/load.R")
 streams <- loadtag(datadir)
@@ -19,27 +26,43 @@ movedat <- data.frame(
 
 movedat <- split(movedat, argos$DeployID)
 movedat <- movedat[[1]]
-m0 <- movedat
+movedat <- rbind(data.frame(
+	t = "2017-05-10 16:17:00 UTC",
+	lat = 35.58,
+	lon = -74.712,
+	lc = "3",
+	lat2 = 35.58,
+	lon2 = -74.712
+), movedat)
 
-# movedat <- rbind(data.frame(t = "2017-05-10 16:17:00 UTC", lat = 35.58, lon = -74.712, lc = "3", stringsAsFactors = FALSE), movedat)
 movedat$lc <- factor(movedat$lc, levels = c("Z", "B", "A", "0", "1", "2", "3"))
+m0 <- movedat
 
 # load douglas filter
 
 
-PARAMS <- list(maxredun = 10, keep_lc = 1, minrate = 50, ratecoef = 25)
+PARAMS <- list(maxredun = 10, keep_lc = 5, minrate = 50, ratecoef = 25, r_only = FALSE)
+PARAMS$minrate <- 10
+PARAMS$ratecoef <- 15
+PARAMS$keep_lc <- 6
+# PARAMS$r_only = TRUE
 
-m1 <- douglasfilter(movedat)
-PARAMS$ratecoef = 50
-m2 <- douglasfilter(movedat, PARAMS)
-PARAMS$ratecoef = 5
-m3 <- douglasfilter(movedat, PARAMS)
+m1 <- douglasfilter(movedat, PARAMS)
 
-dgf <- read.table("~/Desktop/douglas_filtered/ZcTag054-058-Filtered.csv", header = TRUE, sep = ',')
-dd <- split(dgf, dgf$animal)[[1]]
+# plot
 plot(dd$longitud, dd$latitude)
 
 points(m0$lon, m0$lat, cex = .5, col = "blue")
 points(m1$lon, m1$lat, cex = .5, col = "red")
+
+# # for(i in 2:nrow(m1)) {
+	# lines(m1$lon[c(i-1, i)], m1$lat[c(i-1, i)], col = "blue")
+	# invisible(readline(prompt="Press [enter] to continue"))
+# }
+
+# for(i in 2:nrow(dd)) {
+	# lines(dd$longitud[c(i-1, i)], dd$latitude[c(i-1, i)], col = "black")
+	# invisible(readline(prompt="Press [enter] to continue"))
+# }
 
 # points(movedat$lon2, movedat$lat2, col = "blue", cex = .5)
