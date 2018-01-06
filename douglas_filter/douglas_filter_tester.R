@@ -1,4 +1,5 @@
 # douglas filter tester
+source("douglasfunctions.r")
 
 # load example douglas filtered
 # from this i can infer that they used the DAR filter with 10 as a minrate
@@ -26,14 +27,14 @@ movedat <- data.frame(
 
 movedat <- split(movedat, argos$DeployID)
 movedat <- movedat[[1]]
-movedat <- rbind(data.frame(
-	t = "2017-05-10 16:17:00 UTC",
-	lat = 35.58,
-	lon = -74.712,
-	lc = "3",
-	lat2 = 35.58,
-	lon2 = -74.712
-), movedat)
+# movedat <- rbind(data.frame(
+	# t = "2017-05-10 16:17:00 UTC",
+	# lat = 35.58,
+	# lon = -74.712,
+	# lc = "3",
+	# lat2 = 35.58,
+	# lon2 = -74.712
+# ), movedat)
 
 movedat$lc <- factor(movedat$lc, levels = c("Z", "B", "A", "0", "1", "2", "3"))
 m0 <- movedat
@@ -50,10 +51,15 @@ PARAMS$keep_lc <- 6
 m1 <- douglasfilter(movedat, PARAMS)
 
 # plot
-plot(dd$longitud, dd$latitude)
+plot(dd$longitud, dd$latitude, cex = 1.5)
 
-points(m0$lon, m0$lat, cex = .5, col = "blue")
+# points(m0$lon, m0$lat, cex = .5, col = "blue")
+text(m0$lon, m0$lat, paste(1:nrow(m0)), cex = .5, col = "blue")
 points(m1$lon, m1$lat, cex = .5, col = "red")
+
+#
+q <- 30
+points(m0$lon[q], m0$lat[q], cex = 5, col = "purple")
 
 # # for(i in 2:nrow(m1)) {
 	# lines(m1$lon[c(i-1, i)], m1$lat[c(i-1, i)], col = "blue")
