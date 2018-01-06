@@ -60,7 +60,7 @@ print(paste(i, n, "failed in 3"))
 			} else if(rate1 > MINRATE) {
 				retain_tmp <- FALSE
 print(paste(i, n, "failed in 4"))
-			} else if(rate2 > MINRATE | dist1 + dist5 > dist4 + dist3) {
+			} else if(rate2 > MINRATE & (dist1 + dist5) > (dist4 + dist3)) {
 				retain_tmp <- FALSE
 print(paste(i, n, "failed in 5"))
 			} else {
