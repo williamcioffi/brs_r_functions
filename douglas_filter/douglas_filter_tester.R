@@ -1,12 +1,14 @@
 # douglas filter tester
 source("douglasfunctions.r")
 
+
+an <- 1 # animal
 # load example douglas filtered
 # from this i can infer that they used the DAR filter with 10 as a minrate
 # with only L2s accepted always
 # and perhaps a rate coefficient of less than 25?
 dgf <- read.table("~/Desktop/douglas_filtered/ZcTag054-058-Filtered.csv", header = TRUE, sep = ',')
-dd <- split(dgf, dgf$animal)[[1]]
+dd <- split(dgf, dgf$animal)[[an]]
 
 # load data
 datadir <- "~/Desktop/CURRENT/nulltest"
@@ -26,7 +28,7 @@ movedat <- data.frame(
 )
 
 movedat <- split(movedat, argos$DeployID)
-movedat <- movedat[[1]]
+movedat <- movedat[[an]]
 # movedat <- rbind(data.frame(
 	# t = "2017-05-10 16:17:00 UTC",
 	# lat = 35.58,
@@ -53,13 +55,9 @@ m1 <- douglasfilter(movedat, PARAMS)
 # plot
 plot(dd$longitud, dd$latitude, cex = 1.5)
 
-# points(m0$lon, m0$lat, cex = .5, col = "blue")
-text(m0$lon, m0$lat, paste(1:nrow(m0)), cex = .5, col = "blue")
+points(m0$lon, m0$lat, cex = .5, col = "blue")
+# text(m0$lon, m0$lat, paste(1:nrow(m0)), cex = .5, col = "blue")
 points(m1$lon, m1$lat, cex = .5, col = "red")
-
-#
-q <- 30
-points(m0$lon[q], m0$lat[q], cex = 5, col = "purple")
 
 # # for(i in 2:nrow(m1)) {
 	# lines(m1$lon[c(i-1, i)], m1$lat[c(i-1, i)], col = "blue")
