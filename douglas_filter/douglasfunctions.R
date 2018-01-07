@@ -54,7 +54,7 @@ douglasfilter <- function(movedat, PARAMS = list(maxredun = 10, keep_lc = 5, min
 				retain_tmp <- TRUE	
 			} else if(as.numeric(movedat$lc[iB]) >= KEEP_LC) {
 				retain_tmp <- TRUE
-			} else if(alpha < -25 + RATECOEF*log(min(dist1, dist2)) & !R_ONLY) { # only if r_only is false
+			} else if((alpha < (-25 + RATECOEF*log(min(dist1, dist2))) & !R_ONLY)) { # only if r_only is false
 				retain_tmp <- FALSE
 print(paste(i, n, "failed in 3"))
 			} else if(rate1 > MINRATE) {
@@ -118,7 +118,7 @@ print(paste(i, n, "failed in 5"))
 				retain_tmp <- TRUE	
 			} else if(as.numeric(movedat$lc[iB]) >= KEEP_LC) {
 				retain_tmp <- TRUE
-			} else if(alpha < -25 + RATECOEF*log(min(dist1, dist2)) & !R_ONLY) { # only if r_only is false
+			} else if((alpha < (-25 + RATECOEF*log(min(dist1, dist2))) & !R_ONLY)) { # only if r_only is false
 				retain_tmp <- FALSE
 			} else if(rate1 > MINRATE | rate2 > MINRATE) {
 				retain_tmp <- FALSE
@@ -181,7 +181,7 @@ douglasfilter_old <- function(movedat, PARAMS = list(maxredun = 10, keep_lc = 5,
 				retain_tmp <- TRUE	
 			} else if(as.numeric(movedat$lc[iB]) >= KEEP_LC) {
 				retain_tmp <- TRUE
-			} else if(alpha < -25 + RATECOEF*log(min(dist1, dist2)) & !R_ONLY) { # only if r_only is false
+			} else if((alpha < (-25 + RATECOEF*log(min(dist1, dist2)))) & !R_ONLY) { # only if r_only is false
 				retain_tmp <- FALSE
 print(paste(i, n, "failed in 3"))
 			} else if(rate1 > MINRATE | rate2 > MINRATE) {
