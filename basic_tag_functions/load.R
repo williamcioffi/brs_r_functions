@@ -4,10 +4,10 @@
 # loads some useful data streams for futher manipulation
 # returns a list of behavior, corrupt, status, all, and argos
 #
-# wrc 20170911
+# ~wrc 20170911
+# modified 20180110
 
 loadtag <- function(lookdir) {
-# lookdir <- "."
 
 ff <- list.files(lookdir)
 bf <- ff[grep("-Behavior\\.csv", ff)]
@@ -16,6 +16,7 @@ sf <- ff[grep("-Status\\.csv",   ff)]
 af <- ff[grep("-All\\.csv", ff)]
 ar <- ff[grep("-Argos\\.csv", ff)]
 lo <- ff[grep("-Locations\\.csv", ff)]
+sr <- ff[grep("-Series\\.csv", ff)]
 
 beh <- read.table(file.path(lookdir, bf), header = TRUE, sep = ',', stringsAsFactors = FALSE)
 crp <- read.table(file.path(lookdir, cf), header = TRUE, sep = ',', stringsAsFactors = FALSE)
@@ -23,20 +24,26 @@ sta <- read.table(file.path(lookdir, sf), header = TRUE, sep = ',', stringsAsFac
 alm <- read.table(file.path(lookdir, af), header = TRUE, sep = ',', stringsAsFactors = FALSE)
 arg <- read.table(file.path(lookdir, ar), header = TRUE, sep = ',', stringsAsFactors = FALSE)
 loc <- read.table(file.path(lookdir, lo), header = TRUE, sep = ',', stringsAsFactors = FALSE)
+ser <- read.table(file.path(lookdir, sr), header = TRUE, sep = ',', stringsAsFactors = FALSE)
 
-beh$Start 		<- paste(strptime(beh$Start, 	format = "%H:%M:%S %d-%b-%Y"), "UTC")
-beh$End 			<- paste(strptime(beh$End, 		format = "%H:%M:%S %d-%b-%Y"), "UTC")
-crp$Date 		  <- paste(strptime(crp$Date, 		format = "%H:%M:%S %d-%b-%Y"), "UTC")
-arg$Date      <- paste(strptime(arg$Date, format = "%H:%M:%S %d-%b-%Y"), "UTC")
-sta$Received 	<- paste(strptime(sta$Received, format = "%H:%M:%S %d-%b-%Y"), "UTC")
-loc$Date      <- paste(strptime(loc$Date, format = "%H:%M:%S %d-%b-%Y"), "UTC")
+timeformat1 <- "%H:%M:%S %d-%b-%Y"
+
+beh$Start 		<- paste(strptime(beh$Start, 	format = timeformat), "UTC")
+beh$End 		<- paste(strptime(beh$End, 		format = timeformat), "UTC")
+crp$Date 		<- paste(strptime(crp$Date, 		format = timeformat), "UTC")
+arg$Date      	<- paste(strptime(arg$Date, 		format = timeformat), "UTC")
+sta$Received 	<- paste(strptime(sta$Received, format = timeformat), "UTC")
+loc$Date      	<- paste(strptime(loc$Date, 		format = timeformat), "UTC")
+ser$Date 		<- paste(strptime(paste(ser$Time, ser$Day), format = timeformat), "UTC")
 
 
-# all uses a different date format... do I even have to explain why this is insane?
-alm$Loc..date <- paste(strptime(alm$Loc..date, format = "%m/%d/%Y %H:%M:%S"), "UTC")
-alm$Msg.Date  <- paste(strptime(alm$Msg.Date, format = "%m/%d/%Y %H:%M:%S"), "UTC")
+# all.csv uses a different date format... do I even have to explain why this is insane?
 
-list(behavior = beh, corrupt = crp, status = sta, allmessages = alm, argos = arg, locations = loc)
+timeformat2 <- "%m/%d/%Y %H:%M:%S"
+alm$Loc..date <- paste(strptime(alm$Loc..date, format = timeformat2), "UTC")
+alm$Msg.Date  <- paste(strptime(alm$Msg.Date,  format = timeformat2), "UTC")
+
+list(behavior = beh, corrupt = crp, status = sta, allmessages = alm, argos = arg, locations = loc, series = ser)
 
 # end of function
 }
