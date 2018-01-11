@@ -28,12 +28,12 @@ ser <- read.table(file.path(lookdir, sr), header = TRUE, sep = ',', stringsAsFac
 
 timeformat1 <- "%H:%M:%S %d-%b-%Y"
 
-beh$Start 		<- paste(strptime(beh$Start, 	format = timeformat), "UTC")
-beh$End 		<- paste(strptime(beh$End, 		format = timeformat), "UTC")
-crp$Date 		<- paste(strptime(crp$Date, 		format = timeformat), "UTC")
-arg$Date      	<- paste(strptime(arg$Date, 		format = timeformat), "UTC")
-sta$Received 	<- paste(strptime(sta$Received, format = timeformat), "UTC")
-loc$Date      	<- paste(strptime(loc$Date, 		format = timeformat), "UTC")
+beh$Start 		<- paste(strptime(beh$Start, 	format = timeformat1), "UTC")
+beh$End 		<- paste(strptime(beh$End, 		format = timeformat1), "UTC")
+crp$Date 		<- paste(strptime(crp$Date, 		format = timeformat1), "UTC")
+arg$Date      	<- paste(strptime(arg$Date, 		format = timeformat1), "UTC")
+sta$Received 	<- paste(strptime(sta$Received, format = timeformat1), "UTC")
+loc$Date      	<- paste(strptime(loc$Date, 		format = timeformat1), "UTC")
 ser$Date 		<- paste(strptime(paste(ser$Time, ser$Day), format = timeformat), "UTC")
 
 
