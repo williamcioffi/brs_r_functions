@@ -72,6 +72,10 @@ setTxtProgressBar(pb, d/ndirs)
 					tryCatch({ # start tryblock
 			if(curtype != "RawArgos.csv") {
 				curstream[[d]] <- read.table(path, header = TRUE, sep = ',', comment.char = "")
+				if(curtype == "Behavior.csv") {
+					goodcols <- apply(curstream[[d]], 2, function(x) any(complete.cases(x)))
+					curstream[[d]] <- curstream[[d]][, goodcols]
+				}
 			} else {
 				curstream[[d]] <- read.table(text = paste0(head(readLines(path), -5)), header = TRUE, sep = ',', comment.char = "")
 			}
