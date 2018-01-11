@@ -10,9 +10,15 @@ douglasfilter <- function(movedat, PARAMS = list(maxredun = 10, keep_lc = 5, min
 	RATECOEF <- PARAMS$ratecoef
 	R_ONLY <- PARAMS$r_only
 	
+	movedat.out <- movedat
+	movedat.out[ , 'filtered'] <- FALSE
+	movedat.out[ , 'reason'] <- ""
+	
 	### three iterations of this
 	for(i in 1:3) {
 		retain <- rep(FALSE, nrow(movedat))
+		reason <- rep("", nrow(movedat))
+	
 		retain[1] <- TRUE # first one
 		retain[length(retain)] <- TRUE # last one
 		retain[length(retain) - 1] <- TRUE # second to last one
@@ -52,19 +58,25 @@ douglasfilter <- function(movedat, PARAMS = list(maxredun = 10, keep_lc = 5, min
 			### first three
 			if(dist1 < MAXREDUN) {
 				retain_tmp <- TRUE	
+				reason[iB] <- paste0(i, "-1")
 			} else if(as.numeric(movedat$lc[iB]) >= KEEP_LC) {
 				retain_tmp <- TRUE
+				reason[iB] <- paste0(i, "-2")
 			} else if((alpha < (-25 + RATECOEF*log(min(dist1, dist2))) & !R_ONLY)) { # only if r_only is false
 				retain_tmp <- FALSE
+				reason[iB] <- paste0(i, "-3")
 print(paste(i, n, "failed in 3"))
 			} else if(rate1 > MINRATE) {
 				retain_tmp <- FALSE
+				reason[iB] <- paste0(i, "-4")
 print(paste(i, n, "failed in 4"))
 			} else if(rate2 > MINRATE & (dist1 + dist5) > (dist4 + dist3)) {
 				retain_tmp <- FALSE
+				reason[iB] <- paste0(i, "-5")
 print(paste(i, n, "failed in 5"))
 			} else {
 				retain_tmp <- TRUE
+				reason[iB] <- paste0(i, "-6")
 			}
 			
 			retain[iB] <- retain_tmp
@@ -76,13 +88,16 @@ print(paste(i, n, "failed in 5"))
 			# readline(prompt="Press [enter] to continue")
 		}
 		
-		movedat <- movedat[retain, ]
+		movedat.out[!movedat.out$filtered, 'reason'] <- reason
+		movedat.out[!movedat.out$filtered, 'filtered'] <- !retain
+		movedat <- movedat[retain, ]	
 	}
 	
 	# two iterations of this
 	
 	for(i in 1:2) {
 		retain <- rep(FALSE, nrow(movedat))
+		reason <- rep("", nrow(movedat))
 		retain[1] <- TRUE # first one
 		retain[length(retain)] <- TRUE # last one
 		
@@ -116,23 +131,30 @@ print(paste(i, n, "failed in 5"))
 			### first three
 			if(dist1 < MAXREDUN) {
 				retain_tmp <- TRUE	
+				reason[iB] <- paste0(i, "-1")
 			} else if(as.numeric(movedat$lc[iB]) >= KEEP_LC) {
 				retain_tmp <- TRUE
+				reason[iB] <- paste0(i, "-2")
 			} else if((alpha < (-25 + RATECOEF*log(min(dist1, dist2))) & !R_ONLY)) { # only if r_only is false
 				retain_tmp <- FALSE
+				reason[iB] <- paste0(i, "-3")
 			} else if(rate1 > MINRATE | rate2 > MINRATE) {
 				retain_tmp <- FALSE
+				reason[iB] <- paste0(i, "-4mod")
 			} else {
 				retain_tmp <- TRUE
+				reason[iB] <- paste0(i, "-6")
 			}
 					
 			retain[iB] <- retain_tmp
 		}
 		
-		movedat <- movedat[retain, ]
+		movedat.out[!movedat.out$filtered, 'reason'] <- reason
+		movedat.out[!movedat.out$filtered, 'filtered'] <- !retain
+		movedat <- movedat[retain, ]	
 	}
 	
-	movedat
+	movedat.out
 }
 
 
