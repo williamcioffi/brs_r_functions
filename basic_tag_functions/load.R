@@ -31,7 +31,8 @@ arg <- read.table(file.path(lookdir, ar), header = TRUE, sep = ',', stringsAsFac
 setTxtProgressBar(pb, 5/16)
 loc <- read.table(file.path(lookdir, lo), header = TRUE, sep = ',', stringsAsFactors = FALSE)
 setTxtProgressBar(pb, 6/16)
-ser <- read.table(file.path(lookdir, sr), header = TRUE, sep = ',', stringsAsFactors = FALSE)
+
+# ser <- read.table(file.path(lookdir, sr), header = TRUE, sep = ',', stringsAsFactors = FALSE)
 setTxtProgressBar(pb, 7/16)
 
 timeformat1 <- "%H:%M:%S %d-%b-%Y"
@@ -48,7 +49,8 @@ sta$Received 	<- paste(strptime(sta$Received, format = timeformat1), "UTC")
 setTxtProgressBar(pb, 12/16)
 loc$Date      	<- paste(strptime(loc$Date, 		format = timeformat1), "UTC")
 setTxtProgressBar(pb, 13/16)
-ser$Date 		<- paste(strptime(paste(ser$Time, ser$Day), format = timeformat1), "UTC")
+
+# ser$Date 		<- paste(strptime(paste(ser$Time, ser$Day), format = timeformat1), "UTC")
 setTxtProgressBar(pb, 14/16)
 
 # all.csv uses a different date format... do I even have to explain why this is insane?
@@ -60,7 +62,7 @@ alm$Msg.Date  <- paste(strptime(alm$Msg.Date,  format = timeformat2), "UTC")
 setTxtProgressBar(pb, 16/16)
 
 close(pb)
-list(behavior = beh, corrupt = crp, status = sta, allmessages = alm, argos = arg, locations = loc, series = ser)
+list(behavior = beh, corrupt = crp, status = sta, allmessages = alm, argos = arg, locations = loc)#, series = ser)
 
 # end of function
 }
