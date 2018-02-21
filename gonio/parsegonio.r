@@ -1,8 +1,8 @@
 # parse the raw goniometer files
 
 # this is the path to the raw goniometer file and ptt key file
-gfile <- "~/Desktop/goniometer_translator/allgonio_log.txt"
-pttkey_file <- "~/Desktop/goniometer_translator/pttkey.csv"
+gfile <- "allgonio_log.txt"
+pttkey_file <- "pttkey.csv"
 
 # constants for the fake DSA file
 # header
@@ -67,7 +67,9 @@ foundptts <- pttkey$PTT[match(foundhexes, pttkey$HEX)]
 output <- ""
 	
 # go through each found hex and bundle up all the messages
+pb <- txtProgressBar(style = 3)
 for(i in 1:length(foundhexes)) {
+setTxtProgressBar(pb, i/length(foundhexes))
 	dese <- which(subg$V9 == foundhexes[i])
 	header <- paste(h1, foundptts[i], h3, subg$V1[dese[1]], h6)
 	
@@ -107,5 +109,6 @@ for(i in 1:length(foundhexes)) {
 		
 	}
 }
+close(pb)
 
-cat(output, file = paste0("gonio_DSA.txt"))
+cat(output, file = "gonio_DSA.txt")
