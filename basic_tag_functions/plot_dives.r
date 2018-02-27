@@ -14,6 +14,7 @@ plot_dives <- function(
   col = NULL,
   pch = NULL,
   lty = 1,
+  lwd = 1,
   cex = 1,
   hidelegend = FALSE,
   ylab = "depth (meters)"
@@ -206,7 +207,7 @@ for(l in 1:length(blist)) {
 	
 	xx <- as.POSIXct(xx, tz = "UTC")
 	points(xx, yy, col = colorss[l], pch = pch[l], cex = cexes[l])
-	if(!is.na(lty)) lines(xx, yy, col = colorss[l], lty = lty)
+	if(!is.na(lty)) lines(xx, yy, col = colorss[l], lty = lty, lwd = lwd)
 	
 	# cur_alltimes <- c(as.character(cur$Start), as.character(cur$End))
 	# lines(as.POSIXct(cur_alltimes, tz = "UTC"), rep(l*100, nrow(cur)*2), lwd = 10, col = colors_dark[l])
@@ -216,7 +217,11 @@ taglabs <- sapply(blist, function(l) as.character(l$DeployID[1]))
 ntags <- length(taglabs)
 
 if(!hidelegend) {
-legend("bottomright", legend = taglabs, pch = pch[1:ntags], lty = rep(lty, ntags), col = colors_dark[1:ntags], bty = 'n')
+	if(!is.na(lty)) {
+		legend("bottomright", legend = taglabs, pch = pch[1:ntags], lty = rep(lty, ntags), col = colors_dark[1:ntags], bty = 'n')
+	} else {
+		legend("bottomright", legend = taglabs, pch = pch[1:ntags], col = colors_dark[1:ntags], bty = 'n')
+	}
 }
 
 if(show_gaps) {
