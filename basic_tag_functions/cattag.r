@@ -74,7 +74,10 @@ setTxtProgressBar(pb, d/ndirs)
 				curstream[[d]] <- read.table(path, header = TRUE, sep = ',', comment.char = "")
 				if(curtype == "Behavior.csv") {
 					goodcols <- apply(curstream[[d]], 2, function(x) any(complete.cases(x)))
+					# manually save col 3 DepthSensor if it is all NAs
+					goodcols[3] <- TRUE
 					curstream[[d]] <- curstream[[d]][, goodcols]
+					
 				}
 			} else {
 				curstream[[d]] <- read.table(text = paste0(head(readLines(path), -5)), header = TRUE, sep = ',', comment.char = "")
@@ -97,7 +100,7 @@ close(pb)
 					}, # start catchblock
 					error = function(err) {
 						message(paste(err, "type", utypes[i]))
-						message(paste(capture.output(print(data.frame(dir = basename(dirs), ncol = sapply(curstream, ncol)))), collapse = "\n"))
+						message(paste(capture.output(print(data.frame(dir = basename(dirs), ncol = sapply(curstream, length)))), collapse = "\n"))
 					},
 					warning = function(war) {
 						message(paste("type", utypes[i], war))
