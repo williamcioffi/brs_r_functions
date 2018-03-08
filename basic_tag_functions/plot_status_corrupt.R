@@ -1,16 +1,22 @@
 #tag_diagnostics
 
-plot_status <- function(status, ycolname, start_time = NULL, end_time = NULL, show_minutes = FALSE, deploy_ids = NULL, legendpos = "topleft") {
+plot_status <- function(status, ycolname, start_time = NULL, end_time = NULL, show_minutes = FALSE, deploy_ids = NULL, legendpos = "topleft", col = NULL) {
 
 if(!is.null(deploy_ids)) {
 	dese <- which(status$DeployID %in% deploy_ids)
 	status <- status[dese, ]
 }
+
+if(is.null(col)) {
+	col <- rainbow(length(unique(status$DeployID)))
+}
+
+
 	
 ps <- prepstatus(status, start_time, end_time)
 
-col <- which(colnames(ps$s_ordered) == ycolname)
-yy <- ps$s_ordered[, col]
+cols <- which(colnames(ps$s_ordered) == ycolname)
+yy <- ps$s_ordered[, cols]
 xx <- as.POSIXct(ps$s_ordered$Received, tz = "UTC")
 
 plot(xx, yy,
@@ -28,21 +34,21 @@ if(show_minutes) axis.POSIXct(1, at = ps$mseq, labels = FALSE)
 
 for(i in 1:length(ps$slist)) {
 	xx <- as.POSIXct(ps$slist[[i]]$Received, tz = "UTC")
-	yy <- ps$slist[[i]][, col]
+	yy <- ps$slist[[i]][, cols]
 	kill <- -which(is.na(yy))
 	if(length(kill) > 0) {
 		xx <- xx[kill]
 		yy <- yy[kill]
 	}
-	points(xx, yy, pch = ps$pches[i], col = ps$colors_dark[i], cex = ps$cex[i])
-	lines(xx, yy, col = ps$colors_dark[i])
+	points(xx, yy, pch = ps$pches[i], col = col[i], cex = ps$cex[i])
+	lines(xx, yy, col = col[i])
 }
 
 taglabs <- sapply(ps$slist, function(l) as.character(l$DeployID[1]))
 ntags <- length(taglabs)
 
 if(!is.na(legendpos)) {
-	legend(legendpos, legend = taglabs, pch = ps$pches[1:ntags], lty = c(rep(1, ntags)), col = c(ps$colors_dark[1:ntags]), bty = 'n')
+	legend(legendpos, legend = taglabs, pch = ps$pches[1:ntags], lty = c(rep(1, ntags)), col = col, bty = 'n')
 }
 
 }
