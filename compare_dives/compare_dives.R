@@ -93,7 +93,7 @@ plotcomparedives <- function(com, obs = FALSE, log = '', ...) {
 
 
 
-compare_dives <- function(b1, b2, cliptime = FALSE, checkgaps = FALSE) {
+compare_dives_old <- function(b1, b2, cliptime = FALSE, checkgaps = FALSE) {
 	b2raw <- b2
 	
 	# clip time clips both records only to the time that they were both transmitting
