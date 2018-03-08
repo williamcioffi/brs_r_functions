@@ -111,8 +111,8 @@ compare_dives <- function(b1, b2, cliptime = FALSE) {
 	b1[, 'DepthMean'] <- apply(b1[, c('DepthMax', 'DepthMin')], 1, mean)
 	b2[, 'DepthMean'] <- apply(b2[, c('DepthMax', 'DepthMin')], 1, mean)
 	
-	b1 <- b1[-which(b1$What == "Message"), ]
-	b2 <- b2[-which(b2$What == "Message"), ]
+	b1 <- b1[b1$What != "Message", ]
+	b2 <- b2[b1$What != "Message", ]
 
 	b1_ens <- as.POSIXct(b1$End, tz = "UTC")
 	b2_ens <- as.POSIXct(b2$End, tz = "UTC")
