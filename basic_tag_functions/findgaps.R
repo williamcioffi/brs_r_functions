@@ -1,13 +1,11 @@
 #find gaps
 
 
-findgaps <- function(behavior) {
-	MAX_ALLOWED_DIFF <- 60
+findgaps <- function(behavior, tolerance = 60) {
+	MAX_ALLOWED_DIFF <- tolerance
 	
-	wh <- behavior$What
-	
-	st <- behavior$Start [-which(wh == "Message")]
-	en <- behavior$End	  [-which(wh == "Message")]
+	st <- behavior$Start[behavior$What != "Message"]
+	en <- behavior$End[behavior$What != "Message"]
 	n  <- length(st)
 	
 	diffs <- difftime(st[2:n], en[1:(n - 1)], units = "secs")
