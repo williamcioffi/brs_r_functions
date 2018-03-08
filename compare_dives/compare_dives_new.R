@@ -8,9 +8,6 @@ compare_dives <- function(b1, b2) {
 	b1$End <- as.POSIXct(b1$End, tz = "UTC")
 	b2$End <- as.POSIXct(b2$End, tz = "UTC")
 	
-	b1raw <- b1
-	b2raw <- b2
-	
 	# clip time clips both records only to the time that they were both transmitting
 	start <- max(c(min(b1$Start), min(b2$Start)))
 	end   <- min(c(max(b1$End)  , max(b2$End)))
@@ -33,18 +30,15 @@ compare_dives <- function(b1, b2) {
 	b1_ens <- as.POSIXct(b1$End, tz = "UTC")
 	b2_ens <- as.POSIXct(b2$End, tz = "UTC")
 	
-	# add the first start to the beginning
-	b1_ens <- as.POSIXct(c(as.character(b1$Start), as.character(b1_ens)), tz = "UTC")
-	b2_ens <- as.POSIXct(c(as.character(b2$Start), as.character(b2_ens)), tz = "UTC")
-	
 	# delete any gaps
-	gaps1 <- findgaps(b1raw)
-	gaps2 <- findgaps(b2raw)
+	gaps1 <- findgaps(b1)
+	gaps2 <- findgaps(b2)
 	
 	if(gaps1$ngaps > 0) {
 		for(i in 1:gaps1$ngaps) {
 			b2_ens[b2_ens > gaps1$gap_st[i] & b2_ens < gaps1$gap_en[i]] <- NA
 		}
+		b2 <- b2[!is.na(b2_ens), ]
 		b2_ens <- b2_ens[!is.na(b2_ens)]
 	}
 	
@@ -52,16 +46,19 @@ compare_dives <- function(b1, b2) {
 		for(i in 1:gaps2$ngaps) {
 			b1_ens[b1_ens > gaps2$gap_st[i] & b1_ens < gaps2$gap_en[i]] <- NA
 		}
-		
+		b1 <- b1[!is.na(b1_ens), ]
 		b1_ens <- b1_ens[!is.na(b1_ens)]
 	}
 	
 	# if b2 is longer than b1 flip them
 	if(nrow(b2) > nrow(b1)) {
-		b1.old <- b1
-		b2.old <- b2
-		b1 <- b2.old
-		b2 <- b1.old
+		tmpb1 <- b1
+		b1 <- b2
+		b2 <- tmpb1
+		
+		tmpb1ens <- b1_ens
+		b1_ens <- b2_ens
+		b2_ens <- tmpb1ens
 	}
 	
 	# set up some vectors to hold the results
