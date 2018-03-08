@@ -93,7 +93,7 @@ plotcomparedives <- function(com, obs = FALSE, log = '', ...) {
 
 
 
-compare_dives <- function(b1, b2, cliptime = FALSE) {
+compare_dives <- function(b1, b2, cliptime = FALSE, checkgaps = FALSE) {
 	b2raw <- b2
 	
 	# clip time clips both records only to the time that they were both transmitting
@@ -144,19 +144,21 @@ compare_dives <- function(b1, b2, cliptime = FALSE) {
 		diff_b1_type[i] <- b1$What[i]
 		diff_b2_type[i] <- b2$What[dis]
 	}
-	
-	gaps <- findgaps(b2raw)
-	
-	if(gaps$ngaps > 0) {
-		for(i in 1:gaps$ngaps) {
-			dese <- which(b1_ens > as.POSIXct(gaps$gap_st[i], tz = "UTC") & b1_ens < as.POSIXct(gaps$gap_en[i], tz = "UTC"))
-			if(length(dese) > 0) {
-				b1_ens		 <- b1_ens[-dese]
-				diff_times	 <- diff_times[-dese]
-				diff_durs	 <- diff_durs[-dese]
-				diff_deps	 <- diff_deps[-dese]
-				diff_b1_type <- diff_b1_type[-dese]
-				diff_b2_type <- diff_b2_type[-dese]
+
+	if(checkgaps) {
+		gaps <- findgaps(b2raw)
+		
+		if(gaps$ngaps > 0) {
+			for(i in 1:gaps$ngaps) {
+				dese <- which(b1_ens > as.POSIXct(gaps$gap_st[i], tz = "UTC") & b1_ens < as.POSIXct(gaps$gap_en[i], tz = "UTC"))
+				if(length(dese) > 0) {
+					b1_ens		 <- b1_ens[-dese]
+					diff_times	 <- diff_times[-dese]
+					diff_durs	 <- diff_durs[-dese]
+					diff_deps	 <- diff_deps[-dese]
+					diff_b1_type <- diff_b1_type[-dese]
+					diff_b2_type <- diff_b2_type[-dese]
+				}
 			}
 		}
 	}
