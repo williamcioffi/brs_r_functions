@@ -17,6 +17,8 @@ ps <- prepstatus(status, start_time, end_time)
 
 cols <- which(colnames(ps$s_ordered) == ycolname)
 yy <- ps$s_ordered[, cols]
+if(all(is.na(yy))) stop("looks like there is nothing to plot in that column")
+
 xx <- as.POSIXct(ps$s_ordered$Received, tz = "UTC")
 
 plot(xx, yy,
