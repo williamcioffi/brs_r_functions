@@ -1,6 +1,6 @@
 #tag_diagnostics
 
-plot_status <- function(status, ycolname, start_time = NULL, end_time = NULL, show_minutes = FALSE, deploy_ids = NULL, legendpos = "topleft", col = NULL) {
+plot_status <- function(status, ycolname, start_time = NULL, end_time = NULL, show_minutes = FALSE, show_hours = TRUE, deploy_ids = NULL, legendpos = "topleft", col = NULL, hidelegend = FALSE, xaxt = TRUE) {
 
 if(!is.null(deploy_ids)) {
 	dese <- which(status$DeployID %in% deploy_ids)
@@ -27,10 +27,12 @@ plot(xx, yy,
 )
 
 axis(2, las = 1)
-axis.POSIXct(1, at = ps$dseq, format = "%d%b", las = 2, tcl = '-0.75')
-axis.POSIXct(1, at = ps$tseq, labels = FALSE)
 
-if(show_minutes) axis.POSIXct(1, at = ps$mseq, labels = FALSE)
+if(xaxt) {
+	axis.POSIXct(1, at = ps$dseq, format = "%d%b", las = 2, tcl = '-0.75')
+	if(show_hours) axis.POSIXct(1, at = ps$tseq, labels = FALSE)
+	if(show_minutes) axis.POSIXct(1, at = ps$mseq, labels = FALSE)
+}
 
 for(i in 1:length(ps$slist)) {
 	xx <- as.POSIXct(ps$slist[[i]]$Received, tz = "UTC")
@@ -47,7 +49,7 @@ for(i in 1:length(ps$slist)) {
 taglabs <- sapply(ps$slist, function(l) as.character(l$DeployID[1]))
 ntags <- length(taglabs)
 
-if(!is.na(legendpos)) {
+if(!is.na(legendpos) & !hidelegend) {
 	legend(legendpos, legend = taglabs, pch = ps$pches[1:ntags], lty = c(rep(1, ntags)), col = col, bty = 'n')
 }
 
