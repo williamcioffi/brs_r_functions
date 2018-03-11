@@ -238,7 +238,7 @@ if(show_gaps) {
 		}
 	}
 	
-	axis(2, at = mean(c(gapy1, gapy2)), labels = c("gaps"), las = 1)
+	axis(2, at = mean(c(gapy1, gapy2)), labels = c("Gaps"), las = 1)
 }
 
 }
