@@ -11,7 +11,7 @@ if(is.null(col)) {
 	col <- rainbow(length(unique(status$DeployID)))
 }
 
-if(all(is.na(status$Recieved))) {
+if(all(is.na(status$Received))) {
 	stop("is there something wrong with the times in recieved?")
 }
 ps <- prepstatus(status, start_time, end_time)
