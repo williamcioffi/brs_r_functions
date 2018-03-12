@@ -8,3 +8,9 @@ testers/
 
 # output files
 outs/*.*
+
+# diagnostic plots data and outs
+cleaning_error_det/diagnostic_plots_20180311/0-*
+cleaning_error_det/diagnostic_plots_20180311/1-*
+cleaning_error_det/diagnostic_plots_20180311/3-*
+cleaning_error_det/diagnostic_plots_20180311/outs*
