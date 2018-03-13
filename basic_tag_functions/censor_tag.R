@@ -4,6 +4,40 @@
 # censors behavior records based on duration and depth
 # ~wrc 20180312
 
+# version of findgaps that accounts for messages
+findgaps_stretches <- function(behavior, tolerance = 60) {
+	MAX_ALLOWED_DIFF <- tolerance
+	
+	st <- behavior$Start[behavior$What != "Message"]
+	en <- behavior$End[behavior$What != "Message"]
+	n  <- length(st)
+	
+	originalind <- which(behavior$What != "Message")
+	
+	diffs <- difftime(st[2:n], en[1:(n - 1)], units = "secs")
+	diffs_originalind <- vector()
+	diffs_originalind[originalind[2:length(originalind)]] <- diffs
+	
+	stretchid <- vector()
+	k <- 1
+	for(i in 1:length(diffs_originalind)) {
+		curdif <- diffs_originalind[i]
+		if(!is.na(curdif) & abs(curdif) > MAX_ALLOWED_DIFF) k <- k + 1
+		if(!is.na(curdif)) stretchid[i] <- k
+	}
+	
+	stretchid[1] <- 1
+	
+	nas <- which(is.na(stretchid))
+	internal_messages <- stretchid[nas - 1] == stretchid[nas + 1]
+	change_messages <- !internal_messages
+	
+	stretchid[nas[internal_messages]] <- stretchid[nas[internal_messages] - 1]
+	stretchid[nas[change_messages]] <- stretchid[nas[change_messages] + 1]
+	
+	stretchid
+}
+
 censor_tag <- function(b1, depth = 50, duration = 33*60) {
 	depthresh <- depth
 	timthresh <- duration
@@ -15,20 +49,25 @@ censor_tag <- function(b1, depth = 50, duration = 33*60) {
 	flagged <- tooshallow | tooshort
 	b1_flagged <- b1
 	b1_flagged$What[b1$What == "Dive"][flagged] <- "Surface"
+	stretches <- findgaps_stretches(b1)
 	
 	# give each block of surfaces a unique id
 	k <- 0
-	last <- ""
+	lastwhat <- ""
+	laststretch <- 1
+	
 	surfaceid <- 1:nrow(b1_flagged)*NA
 	deserows <- which(b1_flagged$What != "Message")
 	
 	for(i in deserows) {
 		currow <- b1_flagged[i, ]
 		if(currow$What == "Surface") {
-			if(last != "Surface") k <- k + 1
+			if(lastwhat != "Surface") k <- k + 1
+			if(laststretch != stretches[i]) k <- k + 1
 			surfaceid[i] <- k
 		}
-		last <- currow$What
+		lastwhat <- currow$What
+		laststretch <- stretches[i]
 	}
 	
 	# iterate over all surface blocks greater in length than 1 and group together into signal row
@@ -36,6 +75,7 @@ censor_tag <- function(b1, depth = 50, duration = 33*60) {
 	nsurfaceid <- length(usurfaceid)
 	b1_censored <- b1_flagged
 	delete <- rep(FALSE, nrow(b1_censored))
+	
 	for(i in 1:nsurfaceid) {
 		dese <- which(surfaceid == usurfaceid[i])
 		en <- length(dese)
