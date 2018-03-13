@@ -70,7 +70,8 @@ if(is.null(end_time)) {
 }
 
 # create a little room to plot gaps
-deplim <- c(depth_lim, abs(depth_lim)*0.15)
+if(show_gaps) deplim <- c(depth_lim, abs(depth_lim)*0.15)
+if(!show_gaps) deplim <- c(depth_lim, 0)
 
 # set up the plotting area
 plot(
