@@ -148,6 +148,7 @@ for(l in 1:length(blist)) {
 	
 	xx <- vector()
 	yy <- vector()
+	rid <- vector()
 	i <- 0
 	
 	for(m in 1:nrow(cur)) {
@@ -155,15 +156,18 @@ for(l in 1:length(blist)) {
 			i <- i + 1
 			xx[i] <- stt[m]
 			yy[i] <- 0
+			rid[i] <- m
 			
 			if(shp[m] == "Square") {
 				i <- i + 1
 				xx[i] <- stt[m]
 				yy[i] <- dep[m]
+				rid[i] <- m
 			
 				i <- i + 1
 				xx[i] <- ent[m]
 				yy[i] <- dep[m]
+				rid[i] <- m
 			} else if(shp[m] == "U") {
 				st <- as.POSIXct(stt[m], tz = "UTC")
 				en <- as.POSIXct(ent[m], tz = "UTC")
@@ -177,10 +181,12 @@ for(l in 1:length(blist)) {
 				i <- i + 1
 				xx[i] <- btm[1]
 				yy[i] <- dep[m]
+				rid[i] <- m
 				
 				i <- i + 1
 				xx[i] <- btm[2]
 				yy[i] <- dep[m]
+				rid[i] <- m
 				
 			} else if(shp[m] == "V") {
 				mid <- format(mean(as.POSIXct(c(stt[m], ent[m]), tz = "UTC")))
@@ -188,26 +194,46 @@ for(l in 1:length(blist)) {
 				i <- i + 1
 				xx[i] <- mid
 				yy[i] <- dep[m]
+				rid[i] <- m
 			}
 			
 			i <- i + 1
 			xx[i] <- ent[m]
 			yy[i] <- 0
+			rid[i] <- m
 		}
 		if(wht[m] == "Surface") {
 			i <- i + 1
 			xx[i] <- stt[m]
 			yy[i] <- 0
+			rid[i] <- m
 			
 			i <- i + 1
 			xx[i] <- ent[m]
 			yy[i] <- 0
+			rid[i] <- m
 		}
 	}
 	
 	xx <- as.POSIXct(xx, tz = "UTC")
 	points(xx, yy, col = colorss[l], pch = pch[l], cex = cexes[l])
-	if(!is.na(lty)) lines(xx, yy, col = colorss[l], lty = lty, lwd = lwd)
+	if(!is.na(lty)) {
+		if(show_gaps) {
+			gapslist <- findgaps(cur)
+			stretch <- gapslist$stretchid
+			ustretch <- unique(stretch)
+			nstretch <- length(ustretch)
+			
+			for(p in 1:nstretch) {
+				dese <- stretch == ustretch[p]
+				dese <- (1:nrow(cur[cur$What != "Message", ]))[dese]
+				dese <- rid %in% dese
+				lines(xx[dese], yy[dese], type ='l', col = colorss[l], lty = lty, lwd = lwd)
+			}
+		} else {
+			lines(xx, yy, col = colorss[l], lty = lty, lwd = lwd)
+		}
+	}
 	
 	# cur_alltimes <- c(as.character(cur$Start), as.character(cur$End))
 	# lines(as.POSIXct(cur_alltimes, tz = "UTC"), rep(l*100, nrow(cur)*2), lwd = 10, col = colors_dark[l])
@@ -228,7 +254,7 @@ if(show_gaps) {
 	gapy1 <- abs(depth_lim)*0.05
 	gapy2 <- abs(depth_lim)*0.15
 	
-	gapslist <- lapply(blist, function(l) findgaps(l))
+	gapslist <- lapply(blist, findgaps)
 	
 	for(i in 1:length(gapslist)) {
 		if(gapslist[[i]]$ngaps > 0) {
