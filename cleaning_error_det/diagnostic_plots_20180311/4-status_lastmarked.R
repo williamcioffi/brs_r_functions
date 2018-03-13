@@ -34,7 +34,7 @@ setTxtProgressBar(pb, i / length(behl))
 
 	# set up the plotting area for dive profile
 	par(fig = c(0, 1, 0, 0.80), mar = c(4.1, 5.1, 1.1, 0))
-	plot_dives(b, show_gaps = TRUE, col = 1, pch = 16, hidelegend = TRUE, show_hours = FALSE, ylab = "", lty = NA, start_time = plotst, end_time = ploten)
+	plot_dives(b, show_gaps = TRUE, show_shape = FALSE, col = 1, pch = 16, hidelegend = TRUE, show_hours = FALSE, ylab = "", lty = NA, start_time = plotst, end_time = ploten)
 	if(stown$reason == "pressure sensor flagged")
 		abline(v = as.POSIXct(stown$cutoff, tz = "UTC"), col = "royalblue1", lwd = 2)
 	if(stown$reason == "last status message")
