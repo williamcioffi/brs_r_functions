@@ -7,6 +7,7 @@ plot_dives <- function(
   depth_lim = NULL,
   start_time = NULL,
   end_time = NULL,
+  show_shape = TRUE,
   show_gaps = FALSE,
   show_minutes = FALSE,
   show_hours = TRUE,
@@ -23,6 +24,7 @@ plot_dives <- function(
 ###
 # constants  
 USEFUL_PCH <- 0:18
+UNIX_EPOCH <- "1970-01-01"
   
 ###
 # set up of some parameters
@@ -138,7 +140,7 @@ DESEROWS <- lapply(blist, function(l) 1:nrow(l))
 for(l in 1:length(blist)) {
 	cur <- blist[[l]]
 	cur <- cur[DESEROWS[[l]], ]
-	cur <- cur[-which(cur$What == "Message"), ]
+	cur <- cur[cur$What != "Message", ]
 	wht <- cur$What
 	dep <- -apply(cur[, c('DepthMin', 'DepthMax')], 1, mean)
 	stt  <- as.character(cur$Start)
@@ -151,82 +153,93 @@ for(l in 1:length(blist)) {
 	rid <- vector()
 	i <- 0
 	
-	for(m in 1:nrow(cur)) {
-		if(wht[m] == "Dive") {
-			i <- i + 1
-			xx[i] <- stt[m]
-			yy[i] <- 0
-			rid[i] <- m
-			
-			if(shp[m] == "Square") {
+	if(show_shape) {
+		for(m in 1:nrow(cur)) {
+			if(wht[m] == "Dive") {
 				i <- i + 1
 				xx[i] <- stt[m]
-				yy[i] <- dep[m]
+				yy[i] <- 0
 				rid[i] <- m
-			
+				
+				if(shp[m] == "Square") {
+					i <- i + 1
+					xx[i] <- stt[m]
+					yy[i] <- dep[m]
+					rid[i] <- m
+				
+					i <- i + 1
+					xx[i] <- ent[m]
+					yy[i] <- dep[m]
+					rid[i] <- m
+				} else if(shp[m] == "U") {
+					st <- as.POSIXct(stt[m], tz = "UTC")
+					en <- as.POSIXct(ent[m], tz = "UTC")
+					df <- difftime(en, st, units = "secs")
+					df_25per <- df*0.25
+					df_75per <- df*0.75
+					btm <- vector()
+					btm[1] <- format(st + df_25per)
+					btm[2] <- format(st + df_75per)
+					
+					i <- i + 1
+					xx[i] <- btm[1]
+					yy[i] <- dep[m]
+					rid[i] <- m
+					
+					i <- i + 1
+					xx[i] <- btm[2]
+					yy[i] <- dep[m]
+					rid[i] <- m
+					
+				} else if(shp[m] == "V") {
+					mid <- format(mean(as.POSIXct(c(stt[m], ent[m]), tz = "UTC")))
+					
+					i <- i + 1
+					xx[i] <- mid
+					yy[i] <- dep[m]
+					rid[i] <- m
+				}
+				
 				i <- i + 1
 				xx[i] <- ent[m]
-				yy[i] <- dep[m]
-				rid[i] <- m
-			} else if(shp[m] == "U") {
-				st <- as.POSIXct(stt[m], tz = "UTC")
-				en <- as.POSIXct(ent[m], tz = "UTC")
-				df <- difftime(en, st, units = "secs")
-				df_25per <- df*0.25
-				df_75per <- df*0.75
-				btm <- vector()
-				btm[1] <- format(st + df_25per)
-				btm[2] <- format(st + df_75per)
-				
-				i <- i + 1
-				xx[i] <- btm[1]
-				yy[i] <- dep[m]
-				rid[i] <- m
-				
-				i <- i + 1
-				xx[i] <- btm[2]
-				yy[i] <- dep[m]
-				rid[i] <- m
-				
-			} else if(shp[m] == "V") {
-				mid <- format(mean(as.POSIXct(c(stt[m], ent[m]), tz = "UTC")))
-				
-				i <- i + 1
-				xx[i] <- mid
-				yy[i] <- dep[m]
+				yy[i] <- 0
 				rid[i] <- m
 			}
-			
-			i <- i + 1
-			xx[i] <- ent[m]
-			yy[i] <- 0
-			rid[i] <- m
+			if(wht[m] == "Surface") {
+				i <- i + 1
+				xx[i] <- stt[m]
+				yy[i] <- 0
+				rid[i] <- m
+				
+				i <- i + 1
+				xx[i] <- ent[m]
+				yy[i] <- 0
+				rid[i] <- m
+			}
 		}
-		if(wht[m] == "Surface") {
-			i <- i + 1
-			xx[i] <- stt[m]
-			yy[i] <- 0
-			rid[i] <- m
-			
-			i <- i + 1
-			xx[i] <- ent[m]
-			yy[i] <- 0
-			rid[i] <- m
-		}
+	} else {
+		xxdivebottom <- as.character(as.POSIXct((as.numeric(as.POSIXct(stt, tz = "UTC")) + as.numeric(as.POSIXct(ent, tz = "UTC"))) / 2, origin = UNIX_EPOCH, tz = "UTC")) 
+		xxdivebottom <- xxdivebottom[!is.na(dep)]
+		xxdivest <- stt[!is.na(dep)]
+		xxdiveen <- ent[!is.na(dep)]
+		yy <- dep[!is.na(dep)]
+		
+		xx <- c(rbind(xxdivest, xxdivebottom, xxdiveen))
+		yy <- c(rbind(rep(0, length(yy)), yy, rep(0, length(yy))))
+		rid <- rep(1:length(dep[!is.na(dep)]), each = 3)
 	}
 	
 	xx <- as.POSIXct(xx, tz = "UTC")
 	points(xx, yy, col = colorss[l], pch = pch[l], cex = cexes[l])
 	if(!is.na(lty)) {
 		if(show_gaps) {
-			gapslist <- findgaps(cur)
-			stretch <- gapslist$stretchid
+			stretch <- findgaps(cur)$stretchid
+			if(!show_shape) stretch <- stretch[cur$What[cur$What != "Message"] == "Dive"]
 			ustretch <- unique(stretch)
 			nstretch <- length(ustretch)
 			
 			for(p in 1:nstretch) {
-				dese <- stretch == ustretch[p]
-				dese <- (1:nrow(cur[cur$What != "Message", ]))[dese]
+				dese <- which(stretch == ustretch[p])
 				dese <- rid %in% dese
 				lines(xx[dese], yy[dese], type ='l', col = colorss[l], lty = lty, lwd = lwd)
 			}
