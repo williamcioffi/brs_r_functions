@@ -61,4 +61,3 @@ setTxtProgressBar(pb, i / length(behl))
 	dev.off()
 }
 close(pb)
-
