@@ -33,7 +33,6 @@ getmsgid <- function(z) {
 
 statusdepth_filter <- function(s, cutoffnum = 2) {
 # expects status s to have a column named sdates
-# I add this column in below depending on if it has RTC or Recieved dates (varies by tag)
 	deps <- s$Depth[!is.na(s$Depth)]
 	cutoff <- NA
 	reason <- "no depths"

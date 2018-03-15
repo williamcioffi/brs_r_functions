@@ -6,7 +6,7 @@
 
 # version of findgaps that accounts for messages
 findgaps_stretches <- function(behavior, tolerance = 60) {
-	MAX_ALLOWED_DIFF <- tolerance
+	MAX_ALLOWED_DIFF <- tolerance # in seconds
 	
 	st <- behavior$Start[behavior$What != "Message"]
 	en <- behavior$End[behavior$What != "Message"]
