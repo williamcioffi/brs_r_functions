@@ -11,8 +11,8 @@ prefix1 <- "https://raw.githubusercontent.com/williamcioffi/brs_r_functions/mast
 prefix2 <- "https://raw.githubusercontent.com/williamcioffi/cplots/master/"
 
 brs_functions <- paste(
-	getURL(paste0(prefix1, "plot_dives.r"), ssl.verifypeer = FALSE),
-	getURL(paste0(prefix1, "findgaps.R"), ssl.verifypeer = FALSE),
+	getURL(paste0(prefix1, "depreciated/plot_dives_old.r"), ssl.verifypeer = FALSE),
+	getURL(paste0(prefix1, "depreciated/findgaps_old.R"), ssl.verifypeer = FALSE),
 	getURL(paste0(prefix2, "cplot.R"), ssl.verifypeer = FALSE),
 	sep = "\n"
 )
