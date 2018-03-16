@@ -1,4 +1,5 @@
-#tag_diagnostics
+# tag_diagnostics
+# needs to be replaced
 
 plot_status <- function(status, ycolname, start_time = NULL, end_time = NULL, show_minutes = FALSE, show_hours = TRUE, deploy_ids = NULL, legendpos = "topleft", col = NULL, hidelegend = FALSE, xaxt = TRUE) {
 

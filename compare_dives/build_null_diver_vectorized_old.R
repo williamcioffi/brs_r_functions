@@ -1,4 +1,4 @@
-build_null_diver_vectorized2 <- function(baseline, deployid = "nulldiver01", DIVEMINDUR = 33*60) {
+build_null_diver_vectorized <- function(baseline, deployid = "nulldiver01", DIVEMINDUR = 33*60) {
 require(truncnorm)
 
 sim_start_time <- as.character(min(as.POSIXct(baseline$Start, tz = "UTC")))

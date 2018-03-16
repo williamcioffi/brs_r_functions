@@ -1,35 +1,38 @@
 #find gaps
-
-
-findgaps <- function(behavior, tolerance = 60) {
+#use numeric dates
+findgaps2 <- function(behavior, tolerance = 60) {
 	MAX_ALLOWED_DIFF <- tolerance # in seconds
 	
-	st <- behavior$Start[behavior$What != "Message"]
-	en <- behavior$End[behavior$What != "Message"]
+	timeclass <- lapply(behavior[, c('Start', 'End')], class)
+	if(all(timeclass != "numeric")) stop("use numeric times please")
+
+	msg <- behavior$What == "Message"
+	if(all(!msg)) stop("missing message rows")
+	
+	nmsg <- length(msg)
+	msgid <- cumsum(msg)
+	
+	st <- behavior$Start[msg]
+	en <- behavior$End[msg]
 	n  <- length(st)
 	
-	diffs <- difftime(st[2:n], en[1:(n - 1)], units = "secs")
+	diffs <- st[2:n] - en[1:(n - 1)]
+
 	desegaps <- which(abs(diffs) > MAX_ALLOWED_DIFF)
-	gap_st <- en[desegaps]
-	gap_en <- st[desegaps + 1]
 	ngaps  <- length(desegaps)
 	
 	if(ngaps == 0) {
-		stretch <- rep(1, n)
+		stretchid <- rep(1, nrow(behavior))
+		gap_st <- NULL
+		gap_en <- NULL
 	} else {
-		stretch <- 1:n*NA
-		posgap <- desegaps + 1
+		gap_st <- en[desegaps]
+		gap_en <- st[desegaps + 1]
 		
-		stretch[1:desegaps[1]] <- 1
-		
-		if(ngaps > 1) {
-			for(i in 2:ngaps) {
-				stretch[(desegaps[i - 1] + 1):desegaps[i]] <- i
-			}
-		}
-		
-		stretch[(desegaps[ngaps] + 1):n] <- ngaps + 1
+		stretchid <- rep(FALSE, nrow(behavior))
+		stretchid[which(msg)[desegaps]] <- TRUE
+		stretchid <- cumsum(stretchid) + 1
 	}
 	
-	list(deploy_id = unique(behavior$DeployID), ngaps = ngaps, gap_st = gap_st, gap_en = gap_en, gap_diffs = diffs, stretchid = stretch)
+	list(deploy_id = as.character(behavior$DeployID[1]), ngaps = ngaps, gap_st = gap_st, gap_en = gap_en, gap_diffs = diffs, stretchid = stretchid)
 }

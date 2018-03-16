@@ -4,6 +4,8 @@
 # look for depths over +/- 10 meters
 # ~wrc 20180306
 
+# update this
+
 datadir <- "."
 savedir <- "."
 

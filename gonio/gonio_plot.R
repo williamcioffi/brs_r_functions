@@ -1,11 +1,13 @@
 # plot images, gonio, and dive data
 
-plot_gonio <- function(deploy_ids, imagefile, goniofile, behaviorfile = "MASTER-Behavior.csv", pttkeyfile = "pttkey.csv", depth_lim = NULL) {
+plot_gonio <- function(deploy_ids, imagefile, goniofile, behaviorfile = "MASTER-Behavior.csv", pttkeyfile = "pttkey.csv", depth_lim = NULL, tz = "UTC", show_gaps = FALSE) {
+	require(colorspace)
+	UNIX_EPOCH <- "1970-01-01"
 	uanimals <- deploy_ids
 	
 	### load image file
 	im <- read.table(imagefile, header = TRUE, sep = ',', stringsAsFactors = FALSE)
-	im$DateTimeOriginal <- as.POSIXct(im$DateTimeOriginal, tz = "UTC")
+	im$DateTimeOriginal <- as.POSIXct(im$DateTimeOriginal, tz = tz)
 	names(im)[2] <- "datetime"
 	im.all <- im
 	
@@ -15,18 +17,15 @@ plot_gonio <- function(deploy_ids, imagefile, goniofile, behaviorfile = "MASTER-
 	
 	### load behavior file
 	beh <- read.table(behaviorfile, header = TRUE, sep = ',', stringsAsFactors = FALSE)
-	beh$Start <- as.character(as.POSIXct(beh$Start, format = "%H:%M:%S %d-%b-%Y", tz = "UTC"))
-	beh$End <- as.character(as.POSIXct(beh$End, format = "%H:%M:%S %d-%b-%Y", tz = "UTC"))
-	
-
+	beh$Start <- as.numeric(as.POSIXct(beh$Start, format = "%H:%M:%S %d-%b-%Y", tz = tz))
+	beh$End <- as.numeric(as.POSIXct(beh$End, format = "%H:%M:%S %d-%b-%Y", tz = tz))
 	
 	### load goniometer file
 	gon <- read_gonio(goniofile)
 	pttkey <- read.table(pttkeyfile, header = TRUE, sep = ',', stringsAsFactors = FALSE)
 	gon$DeployID <- pttkey$DEPLOYID[match(gon$V9, pttkey$HEX)]
 
-	gon$datetime <- as.POSIXct(gon$V1, tz = "UTC")
-	
+	gon$datetime <- as.POSIXct(gon$V1, tz = tz)
 	
 	### take a look
 	cat("deploy ids:\n")
@@ -54,11 +53,11 @@ plot_gonio <- function(deploy_ids, imagefile, goniofile, behaviorfile = "MASTER-
 	gon <- gon[gon$DeployID %in% uanimals, ]
 	im  <- im [im$DeployID  %in% uanimals, ]
 	
-	library(colorspace)
 	cols <- rainbow_hcl(length(uanimals), c = 100)
-	
+	cols_a <- rainbow_hcl(length(uanimals), c = 100, alpha = 0.5)
+
 	par(fig = c(0, 1, 0, .8), mar = c(5.1, 7.1, 0, 0))
-	plot_dives(beh, start_time = mint, end_time = maxt, col = cols, lwd = 5, pch = NA, depth_lim = depth_lim)
+	plot_dives2(beh, start_time = mint, end_time = maxt, col = cols_a, lwd = 5, pch = NA, depth_lim = depth_lim, show_gaps = show_gaps)
 	tseq <- seq.POSIXt(
 		from = trunc(mint, "hour"),
 		to = trunc(maxt, "hour") + 60*60,
@@ -68,7 +67,7 @@ plot_gonio <- function(deploy_ids, imagefile, goniofile, behaviorfile = "MASTER-
 	axis.POSIXct(1, at = tseq, format = "%Hhrs")
 	
 	par(fig = c(0, 1, .8, 1), mar = c(0, 7.1, 0, 0), new = TRUE)
-	plot(as.POSIXct(c(beh$Start[1], beh$End[nrow(beh)]), tz = "UTC"), rep(0, 2), type = 'n', ylim = c(1, length(uanimals)*2 + 2), xlim = c(mint, maxt), xlab = "", ylab = "", axes = FALSE)
+	plot(c(beh$Start[1], beh$End[nrow(beh)]), rep(0, 2), type = 'n', ylim = c(1, length(uanimals)*2 + 2), xlim = c(mint, maxt), xlab = "", ylab = "", axes = FALSE)
 	
 	for(i in 1:length(uanimals)) {
 		dese <- im$DeployID == uanimals[i]
