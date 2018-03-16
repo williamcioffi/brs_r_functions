@@ -18,14 +18,20 @@ plot_dives2 <- function(
 	lwd = 1,
 	cex = 1,
 	hidelegend = FALSE,
-	ylab = "depth (meters)"
+	legendpos = "bottomright",
+	ylab = "depth (meters)",
+	xaxt = TRUE,
+	gap_plotting_buffer = 0.15,
+	dep_plotting_buffer = 0.15
 ) {
 
 require(colorspace)
 
 # constants  
 UNIX_EPOCH <- "1970-01-01"
-USEFUL_PCH <- 0:14  
+USEFUL_PCH <- 0:14 
+GAP_PLOTTING_BUFFER <- gap_plotting_buffer
+DEP_PLOTTING_BUFFER <- dep_plotting_buffer + 1
 
 # apply start and end time cut offs
 if(!is.null(start_time)) {
@@ -46,15 +52,20 @@ dep <- -rowMeans(bclipped[, c("DepthMax", "DepthMin")])
 dep[is.na(dep)] <- 0
 
 if(is.null(depth_lim)) {
-	depth_lim <- min(dep)*1.15
+	depth_lim <- min(dep) * DEP_PLOTTING_BUFFER
 }
 
 # create a little room to plot gaps
 if(show_gaps) {
-	deplim <- c(depth_lim, abs(depth_lim)*0.15)
+	deplim <- c(depth_lim, abs(depth_lim) * GAP_PLOTTING_BUFFER)
 } else {
 	deplim <- c(depth_lim, 0)
 }
+
+# set up the y axis and pretty ylim
+prettyaxis <- deplim
+prettyaxis[2] <- 0 # don't include the gaps in the axis
+deplim[1] <- pretty(prettyaxis)[1] # this is the lowest dive
 
 # set up a plotting area
 plot(
@@ -64,34 +75,32 @@ plot(
 	las = 1, bty = 'n', axes = FALSE
 )
 
-dseq <- seq.POSIXt(
-	as.POSIXct(paste(as.Date(start_time/60/60/24, origin = UNIX_EPOCH), "00:00:00"), tz = tz),
-	as.POSIXct(paste(as.Date(end_time/60/60/24 + 1, origin = UNIX_EPOCH), "00:00:00"), tz = tz),
-	by = "day"
-)
-
-hseq <- seq.POSIXt(
-	as.POSIXct(paste(as.Date(start_time/60/60/24, origin = UNIX_EPOCH), "00:00:00"), tz = tz),
-	as.POSIXct(paste(as.Date(end_time/60/60/24 + 1, origin = UNIX_EPOCH), "00:00:00"), tz = tz),
-	by = "hour"
-)
-
-mseq <- seq.POSIXt(
-	as.POSIXct(paste(as.Date(start_time/60/60/24, origin = UNIX_EPOCH), "00:00:00"), tz = tz),
-	as.POSIXct(paste(as.Date(end_time/60/60/24 + 1, origin = UNIX_EPOCH), "00:00:00"), tz = tz),
-	by = "min"
-)
-
-# plot x axis
-axis.POSIXct(1, at = dseq, format = "%d%b", las = 2, tcl = '-0.75')
-if(show_hours) axis.POSIXct(1, at = hseq, labels = FALSE)
-if(show_minutes) axis.POSIXct(1, at = mseq, labels = FALSE)
-
 # plot the y axis
-# I don't want to include the gaps plot (15% of maxdepth above 0) in the axis
-prettyaxis <- deplim
-prettyaxis[2] <- 0
 axis(2, at = pretty(prettyaxis), las = 1)
+
+if(xaxt) {
+	dseq <- seq.POSIXt(
+		as.POSIXct(paste(as.Date(start_time/60/60/24, origin = UNIX_EPOCH), "00:00:00"), tz = tz),
+		as.POSIXct(paste(as.Date(end_time/60/60/24 + 1, origin = UNIX_EPOCH), "00:00:00"), tz = tz),
+		by = "day"
+	)
+	
+	hseq <- seq.POSIXt(
+		as.POSIXct(paste(as.Date(start_time/60/60/24, origin = UNIX_EPOCH), "00:00:00"), tz = tz),
+		as.POSIXct(paste(as.Date(end_time/60/60/24 + 1, origin = UNIX_EPOCH), "00:00:00"), tz = tz),
+		by = "hour"
+	)
+	
+	mseq <- seq.POSIXt(
+		as.POSIXct(paste(as.Date(start_time/60/60/24, origin = UNIX_EPOCH), "00:00:00"), tz = tz),
+		as.POSIXct(paste(as.Date(end_time/60/60/24 + 1, origin = UNIX_EPOCH), "00:00:00"), tz = tz),
+		by = "min"
+	)
+
+	axis.POSIXct(1, at = dseq, format = "%d%b", las = 2, tcl = '-0.75')
+	if(show_hours) axis.POSIXct(1, at = hseq, labels = FALSE)
+	if(show_minutes) axis.POSIXct(1, at = mseq, labels = FALSE)
+}
 
 
 # make a tag list
@@ -232,9 +241,9 @@ for(l in 1:ntags) {
 
 if(!hidelegend) {
 	if(!all(is.na(lty))) {
-		legend("bottomright", legend = tags, pch = pch, lty = lty, col = col, bty = 'n')
+		legend(legendpos, legend = tags, pch = pch, lty = lty, col = col, bty = 'n')
 	} else {
-		legend("bottomright", legend = taglabs, pch = pch, col = col, bty = 'n')
+		legend(legendpos, legend = taglabs, pch = pch, col = col, bty = 'n')
 	}
 }
 
