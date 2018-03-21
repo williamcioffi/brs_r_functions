@@ -12,7 +12,7 @@ compare_dives2 <- function(b1, b2, tz = "UTC") {
 	# b1$End <- as.numeric(as.POSIXct(b1$End, tz = tz))
 	# b2$End <- as.numeric(as.POSIXct(b2$End, tz = tz))
 	
-	if(nrow(b1) > 0 & nrow(b2) > 0) {
+	# if(nrow(b1) > 0 & nrow(b2) > 0) {
 		# take the midpoint of duration and depth
 		b1[, 'DurationMean'] <- rowMeans(b1[, c('DurationMax', 'DurationMin')])
 		b2[, 'DurationMean'] <- rowMeans(b2[, c('DurationMax', 'DurationMin')])
@@ -92,11 +92,11 @@ compare_dives2 <- function(b1, b2, tz = "UTC") {
 		what2 <- sub("Surface", "dive_st", as.character(b2$What[match]))
 		what2 <- sub("Dive", "dive_en", what2)
 				
-		out <- list(tag1 = as.character(b1$DeployID[1]), tag2 = as.character(b2$DeployID[1]), t1 = t1, t2_matched = t2, matchindices = match, diff_times = diff_times, diff_durs = diff_durs, diff_deps = diff_deps, what1 = what1, what2 = what2, msgid1 = b1$msgid, msgid2 = b2$msgid)
-	} else {
-		warning("tags don't appear to overlap?")
-		out <- NULL
-	}
+		list(tag1 = as.character(b1$DeployID[1]), tag2 = as.character(b2$DeployID[1]), t1 = t1, t2_matched = t2, matchindices = match, diff_times = diff_times, diff_durs = diff_durs, diff_deps = diff_deps, what1 = what1, what2 = what2, msgid1 = b1$msgid, msgid2 = b2$msgid)
+	# } else {
+		# warning("tags don't appear to overlap?")
+		# out <- NULL
+	# }
 	
-	out
+	# out
 }
