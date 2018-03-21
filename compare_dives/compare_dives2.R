@@ -58,9 +58,28 @@ compare_dives2 <- function(b1, b2, tz = "UTC") {
 			# b1 <- b2
 			# b2 <- tmpb1
 		# }
-		
+
+		# if the first row is a dive, then we need to add the start time
+		if(b1$What[1] == "Dive") {
+			newrow <- as.data.frame(b1[1, ])
+			newrow[1, 1:ncol(newrow)] <- NA
+			newrow[1, 'DeployID'] <- b1$DeployID[1]
+			newrow[1, 'What'] <- "Surface"
+			newrow[1, 'End'] <- b1$Start[1]
+			b1 <- rbind(newrow, b1)
+		}
+		if(b2$What[1] == "Dive") {
+			newrow <- as.data.frame(b2[1, ])
+			newrow[1, 1:ncol(newrow)] <- NA
+			newrow[1, 'DeployID'] <- b2$DeployID[1]
+			newrow[1, 'What'] <- "Surface"
+			newrow[1, 'End'] <- b2$Start[1]
+			b2 <- rbind(newrow, b2)
+		}
+
+		# match times
 		match <- matchtimes(b1$End, b2$End)
-			
+		
 		t1 <- b1$End
 		t2 <- b2$End[match]
 		
