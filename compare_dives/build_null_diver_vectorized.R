@@ -1,7 +1,7 @@
 build_null_diver_vectorized2 <- function(baseline, deployid = "nulldiver01", DIVEMINDUR = 33*60) {
 require(truncnorm)
 
-sim_start_time <- as.character(min(as.POSIXct(baseline$Start, tz = "UTC")))
+sim_start_time <- min(baseline$Start)
 
 dur <- apply(baseline[, c('DurationMax', 'DurationMin')], 1, mean)
 dep <- apply(baseline[, c('DepthMax', 'DepthMin')], 1, mean)
@@ -50,7 +50,7 @@ simwhat <- c(rbind(dive_simwhat, surf_simwhat))
 nsimed <- nevents*2
 st <- vector(mode = "numeric", length = nsimed)
 st[1] <- sim_start_time
-en <- as.character(as.POSIXct(st[1], tz = "UTC") +  cumsum(simdurs))
+en <- st[1] +  cumsum(simdurs)
 st[2: nsimed] <- en[1:(nsimed - 1)]
 
 op <- options("stringsAsFactors")
