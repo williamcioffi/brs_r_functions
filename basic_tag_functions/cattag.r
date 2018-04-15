@@ -70,7 +70,7 @@ setTxtProgressBar(pb, d/ndirs)
 		
 		if(file.exists(path)) {
 					tryCatch({ # start tryblock
-			if(curtype != "RawArgos.csv") {
+			if(curtype != "RawArgos.csv" & curtype != "FastGPS.csv") {
 				curstream[[d]] <- read.table(path, header = TRUE, sep = ',', comment.char = "")
 				if(curtype == "Behavior.csv") {
 					goodcols <- apply(curstream[[d]], 2, function(x) any(complete.cases(x)))
@@ -79,8 +79,10 @@ setTxtProgressBar(pb, d/ndirs)
 					curstream[[d]] <- curstream[[d]][, goodcols]
 					
 				}
-			} else {
+			} else if(curtype == "RawArgos.csv") {
 				curstream[[d]] <- read.table(text = paste0(head(readLines(path), -5)), header = TRUE, sep = ',', comment.char = "")
+			} else if(curtype == "FastGPS.csv") {
+				curstream[[d]] <- read.table(text = paste0(tail(readLines(path), -3)), header = TRUE, sep = ',', comment.char = "")
 			}
 					}, # start catchblock
 					error = function(err) {
