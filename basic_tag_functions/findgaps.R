@@ -3,7 +3,7 @@
 findgaps2 <- function(behavior, tolerance = 60) {
 	MAX_ALLOWED_DIFF <- tolerance # in seconds
 	
-	timeclass <- lapply(behavior[, c('Start', 'End')], class)
+	timeclass <- lapply(behavior[, c('Start', 'End')], mode)
 	if(all(timeclass != "numeric")) stop("use numeric times please")
 
 	msg <- behavior$What == "Message"
