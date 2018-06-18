@@ -30,7 +30,7 @@ findgaps2 <- function(behavior, tolerance = 60) {
 		gap_en <- st[desegaps + 1]
 		
 		stretchid <- rep(FALSE, nrow(behavior))
-		stretchid[which(msg)[desegaps]] <- TRUE
+		stretchid[which(msg)[desegaps + 1]] <- TRUE
 		stretchid <- cumsum(stretchid) + 1
 	}
 	
