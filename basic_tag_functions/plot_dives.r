@@ -209,15 +209,8 @@ for(l in 1:ntags) {
 			}
 		}
 	} else {
-		xxdivebottom <- stt + ent / 2
-		xxdivebottom <- xxdivebottom[!is.na(dep)]
-		xxdivest <- stt[!is.na(dep)]
-		xxdiveen <- ent[!is.na(dep)]
-		yy <- dep[!is.na(dep)]
-		
-		xx <- c(rbind(xxdivest, xxdivebottom, xxdiveen))
-		yy <- c(rbind(rep(0, length(yy)), yy, rep(0, length(yy))))
-		rid <- rep(1:length(dep[!is.na(dep)]), each = 3)
+		xx <- (stt + ent) / 2
+		yy <- dep
 	}
 	
 	points(xx, yy, col = col[l], pch = pch[l], cex = cex[l])
