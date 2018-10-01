@@ -9,8 +9,8 @@ censor_tag2 <- function(b1, depth = 50, duration = 33*60) {
 	timthresh <- duration
 	
 	# flag dives that no longer qualify
-	tooshallow <- b1$DepthMax[b1$What == "Dive"] <= depthresh
-	tooshort <- b1$DurationMax[b1$What == "Dive"] <= 33*60
+	tooshallow <- b1$DepthMin[b1$What == "Dive"] <= depthresh
+	tooshort <- b1$DurationMin[b1$What == "Dive"] <= timthresh
 	
 	flagged <- tooshallow | tooshort
 	b1_flagged <- b1
