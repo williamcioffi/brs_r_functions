@@ -121,7 +121,7 @@ if(length(lwd) == 1) lwd <- rep(lwd, ntags)
 
 for(l in 1:ntags) {
 	cur <- bl[[l]]
-	cur <- cur[cur$What != "Message", ]
+
 	wht <- cur$What
 	dep <- -rowMeans(cur[, c('DepthMin', 'DepthMax')])
 	stt <- cur$Start
