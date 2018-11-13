@@ -37,7 +37,7 @@ censor_tag2 <- function(b1, depth = 50, duration = 33*60) {
 			newrow$Shape <- ""
 			newrow$DepthMin <- NA
 			newrow$DepthMax <- NA
-			newrow$Count <- NA
+			if(!is.null(newrow$Count)) newrow$Count <- NA
 			newrow$DurationMin <- sum(b1_flagged$DurationMin[dese])
 			newrow$DurationMax <- sum(b1_flagged$DurationMax[dese])
 			
