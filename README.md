@@ -1,6 +1,8 @@
 # brs_r_functions
 r functions for processing and manipulating wildlife computer tag output
 
+NOTE: MANY OF THESE FUNCTIONS ARE BEING MIGRATED TO [SATTAGUTILS](https://www.github.com/williamcioffi/sattagutils). check there for the latest versions.
+
 ## basic_tag_functions
 + cattag.r 
   - concatenates wc portal downloaded data into single csv files for each data stream.
