@@ -55,7 +55,7 @@ PARAMS$keep_lc <- 6
 
 m1 <- douglasfilter(m0, PARAMS)
 
-x11()
+# x11()
 par(mfrow = c(2, 1), mar = rep(0, 4))
 m2 <- m1[m1$filtered == FALSE, ]
 plot(m2$lon, m2$lat, ylim = c(35, 38), xlim = c(-75.9, -73), pch = 16, cex = .5, col = "red")
@@ -63,4 +63,22 @@ plot(m2$lon, m2$lat, ylim = c(35, 38), xlim = c(-75.9, -73), pch = 16, cex = .5,
 
 argos2 <- argos[argos$algorithm.marked.outlier != "true", ]
 plot(argos2$location.long, argos2$location.lat, ylim = c(35, 38), xlim = c(-75.9, -73), pch = 16, cex = .5, col = "blue")
-# points(argos$location.long, argos$location.lat)
+# argos3 <- argos[argos$algorithm.marked.outlier == "true", ]
+# points(argos3$location.long, argos3$location.lat)
+
+###
+argos$location.lat == argos$argos.lat1 & argos$location.lon == argos$argos.lon1
+
+lat <- argos$location.lat
+lon <- round(argos$location.lon, digits = 3)
+
+lat1 <- argos$argos.lat1
+lat2 <- argos$argos.lat2
+lon1 <- argos$argos.lon1
+lon2 <- argos$argos.lon2
+
+head(data.frame(lat, lat1, lat == lat1))
+head(data.frame(lon, lon1, lon == lon1))
+
+cbind(lat == lat1, lon == lon1, lat == lat1 & lon == lon1)
+###

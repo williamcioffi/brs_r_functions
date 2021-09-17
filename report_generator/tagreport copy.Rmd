@@ -1,0 +1,50 @@
+---
+title: "tag report"
+author: "wrc"
+date: "`r Sys.Date()`"
+output: 
+  html_document: 
+    highlight: pygments
+    theme: spacelab
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+# knitr::opts_chunk$set(echo = TRUE)
+# include neccessary functions
+source("~/git/brs_r_functions/basic_tag_functions/plot_dives.r")
+source("~/git/brs_r_functions/basic_tag_functions/findgaps.r")
+
+# prep the data
+# loc <- read.table("MASTER-Locations.csv", header = TRUE, sep = ',', stringsAsFactors = FALSE)
+# loc$Date <- as.POSIXct(loc$Date, format = "%H:%M:%S %d-%b-%Y", tz = "UTC")
+# loc$datenum <- as.numeric(loc$Date)
+
+beh <- read.table("MASTER-Behavior.csv", header = TRUE, sep = ',', stringsAsFactors = FALSE)
+beh$date_st <- as.POSIXct(beh$Start, format = "%H:%M:%S %d-%b-%Y", tz = "UTC")
+beh$Start <- as.numeric(beh$date_st)
+beh$date_en <- as.POSIXct(beh$End, format = "%H:%M:%S %d-%b-%Y", tz = "UTC")
+beh$End <- as.numeric(beh$date_en)
+
+locl <- split(loc, loc$DeployID)
+behl <- split(beh, beh$DeployID)
+
+# nloc <- length(locl)
+nbeh <- length(behl)
+```
+
+* * *
+
+## tag summary
+
+There are `r nbeh` tags.
+
+## behavior
+```{r, results = "asis", echo = FALSE}
+for(i in 1:nbeh) {
+	cat("### tag ", i, ": ", names(behl)[i], "\n")
+	plot_dives2(behl[[i]])
+	cat("\n\n")
+}
+```
